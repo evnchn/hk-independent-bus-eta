@@ -15,7 +15,12 @@ import AppContext from "../../../context/AppContext";
 import DbContext from "../../../context/DbContext";
 import useLanguage from "../../../hooks/useTranslation";
 import { useRoutePath } from "../../../hooks/useRoutePath";
-import { checkPosition, getLineColor, locationEqual } from "../../../utils";
+import {
+  checkPosition,
+  getDistance,
+  getLineColor,
+  locationEqual,
+} from "../../../utils";
 import BaseMap from "./BaseMap";
 import SelfCircle from "./SelfCircle";
 import MtrExits from "./MtrExits";
@@ -152,17 +157,42 @@ const RouteMap = ({
 
   const onClickJumpToMyLocation = useCallback(() => {
     if (geoPermission === "granted") {
-      setPendingNav({ type: "flyTo", center: geolocation.current });
-      mapRef.current = {
-        ...mapRef.current,
-        center: geolocation.current,
-        isFollow: true,
-      };
+      // Expand the stop nearest to the user so its ETA is right there.
+      // Selecting it re-centres the map on it (via the effect above) and
+      // scrolls it into view; if it's already selected, just recentre on
+      // the live position instead (and avoid re-opening the stop dialog).
+      let nearestIdx = -1;
+      let nearestDist = Infinity;
+      stops.forEach((s, i) => {
+        if (!s) return;
+        const d = getDistance(s.location, geolocation.current);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearestIdx = i;
+        }
+      });
+      if (nearestIdx >= 0 && nearestIdx !== stopIdx) {
+        onMarkerClick(nearestIdx);
+      } else {
+        setPendingNav({ type: "flyTo", center: geolocation.current });
+        mapRef.current = {
+          ...mapRef.current,
+          center: geolocation.current,
+          isFollow: true,
+        };
+      }
     } else if (geoPermission !== "denied") {
       mapRef.current = { ...mapRef.current, isFollow: true };
       updateGeoPermission("opening");
     }
-  }, [geolocation, geoPermission, updateGeoPermission]);
+  }, [
+    geolocation,
+    geoPermission,
+    updateGeoPermission,
+    stops,
+    stopIdx,
+    onMarkerClick,
+  ]);
 
   const lineColor = getLineColor(companies, route);
   const isJointly = companies.includes("ctb") && companies.includes("kmb");
