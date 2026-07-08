@@ -8,13 +8,15 @@ import {
   SxProps,
   Theme,
 } from "@mui/material";
-import RangeMap from "../map/maplibre/RangeMap";
 import { useTranslation } from "react-i18next";
-import { useCallback, useContext, useState } from "react";
+import { Suspense, lazy, useCallback, useContext, useState } from "react";
 import AppContext from "../../context/AppContext";
 import { Location } from "hk-bus-eta";
 import { Close as CloseIcon } from "@mui/icons-material";
 import { getDistanceWithUnit } from "../../utils";
+
+// Lazy-load maplibre so it is not part of the home-page bundle
+const RangeMap = lazy(() => import("../map/maplibre/RangeMap"));
 
 interface RangeMapDialogProps {
   open: boolean;
@@ -79,11 +81,15 @@ const RangeMapDialog = ({ open, onClose }: RangeMapDialogProps) => {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <RangeMap
-          range={state.searchRange}
-          value={state.geolocation}
-          onChange={updateGeolocation}
-        />
+        <Box sx={{ flex: 1, minHeight: 0 }}>
+          <Suspense fallback={null}>
+            <RangeMap
+              range={state.searchRange}
+              value={state.geolocation}
+              onChange={updateGeolocation}
+            />
+          </Suspense>
+        </Box>
         <Box sx={{ px: 4, py: 5 }}>
           <Slider
             sx={sliderSx}
