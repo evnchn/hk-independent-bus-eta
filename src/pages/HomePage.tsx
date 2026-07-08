@@ -38,6 +38,21 @@ const Home = () => {
     });
   }, [language, AppTitle, t]);
 
+  // Warm the map bundle during idle so the first map view is instant (skip prerender + energy-saving mode).
+  useEffect(() => {
+    if (navigator.userAgent === "prerendering") return;
+    if (JSON.parse(localStorage.getItem("energyMode") ?? "false")) return;
+    const warm = () => {
+      import("../components/map/maplibre/RouteMap").catch(() => {});
+    };
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(warm);
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(warm, 1);
+    return () => window.clearTimeout(id);
+  }, []);
+
   const handleTabChange = (
     v: HomeTabType | string,
     rerenderList: boolean = false
