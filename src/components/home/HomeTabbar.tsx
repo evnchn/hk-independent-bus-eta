@@ -26,8 +26,7 @@ const HomeTabbar = ({ homeTab, onChangeTab }: HomeTabbarProps) => {
       onChange={(_, v) => onChangeTab(v, true)}
       sx={tabbarSx}
       variant="scrollable"
-      scrollButtons
-      allowScrollButtonsMobile
+      scrollButtons={false}
     >
       <Tab
         iconPosition="start"
