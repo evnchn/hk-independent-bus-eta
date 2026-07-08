@@ -258,6 +258,18 @@ const rootSx: SxProps<Theme> = {
   gridTemplateColumns: "15% 1fr minmax(18%, max-content)",
   padding: (theme) => `${theme.spacing(0.5)} ${theme.spacing(1)}`,
   color: "rgba(0,0,0,0.87)",
+  cursor: "pointer",
+  // Instant tap feedback in the brand yellow (#fedb00); sharp, no fade (override MUI's default bg transition — fewest repaints on old Android)
+  WebkitTapHighlightColor: "transparent",
+  transition: "none",
+  "@media (hover: hover)": {
+    "&:hover": {
+      backgroundColor: "rgba(254, 219, 0, 0.06)",
+    },
+  },
+  "&:active": {
+    backgroundColor: "rgba(254, 219, 0, 0.1)",
+  },
 };
 
 const routeDestSx: SxProps<Theme> = {
