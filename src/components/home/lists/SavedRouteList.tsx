@@ -10,12 +10,13 @@ import {
 } from "hk-bus-eta";
 
 // Utils
-import { formatHandling, getDistance } from "../../../utils";
+import { formatHandling, getDistance, sortRoutesByEta } from "../../../utils";
 
 // Context
 import AppContext from "../../../context/AppContext";
 import DbContext from "../../../context/DbContext";
 import CollectionContext from "../../../CollectionContext";
+import { useRoutesEtas } from "../../../hooks/useRoutesEtas";
 
 interface SavedRouteListProps {
   isFocus: boolean;
@@ -23,7 +24,8 @@ interface SavedRouteListProps {
 
 const SavedRouteList = ({ isFocus }: SavedRouteListProps) => {
   const { t } = useTranslation();
-  const { geolocation, isRouteFilter } = useContext(AppContext);
+  const { geolocation, isRouteFilter, sortSavedRoutesByEta } =
+    useContext(AppContext);
   const { savedEtas } = useContext(CollectionContext);
   const {
     db: { routeList, stopList, serviceDayMap },
@@ -51,10 +53,19 @@ const SavedRouteList = ({ isFocus }: SavedRouteListProps) => {
       serviceDayMap,
     ]
   );
-  const noRoutes = useMemo(
-    () => savedRoutes.every((routeId) => !routeId),
+  const activeRoutes = useMemo(
+    () => savedRoutes.filter(Boolean),
     [savedRoutes]
   );
+  const routeEtas = useRoutesEtas(activeRoutes, !sortSavedRoutesByEta);
+  const displayRoutes = useMemo(
+    () =>
+      sortSavedRoutesByEta
+        ? sortRoutesByEta(activeRoutes, routeEtas)
+        : activeRoutes,
+    [sortSavedRoutesByEta, activeRoutes, routeEtas]
+  );
+  const noRoutes = useMemo(() => displayRoutes.length === 0, [displayRoutes]);
 
   if (!isFocus) {
     return <></>;
@@ -72,15 +83,12 @@ const SavedRouteList = ({ isFocus }: SavedRouteListProps) => {
 
   return (
     <List disablePadding sx={{ minHeight: "100dvh" }}>
-      {savedRoutes.map(
-        (selectedRoute, idx) =>
-          Boolean(selectedRoute) && (
-            <SuccinctTimeReport
-              key={`route-shortcut-${idx}`}
-              routeId={selectedRoute}
-            />
-          )
-      )}
+      {displayRoutes.map((selectedRoute) => (
+        <SuccinctTimeReport
+          key={`route-shortcut-${selectedRoute}`}
+          routeId={selectedRoute}
+        />
+      ))}
     </List>
   );
 };

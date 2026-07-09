@@ -1,5 +1,6 @@
 import type {
   Company,
+  Eta,
   EtaDb,
   Location,
   RouteList,
@@ -569,6 +570,20 @@ export const formatHandling = (
     .slice(0, 80)
     .join("|");
 };
+
+// sort routeIds by their earliest eta, routes without an eta go last
+export const sortRoutesByEta = (
+  routeIds: string[],
+  etas: Record<string, Eta[]>
+): string[] =>
+  [...routeIds].sort((a, b) => {
+    const etaA = etas[a]?.find((e) => e.eta)?.eta;
+    const etaB = etas[b]?.find((e) => e.eta)?.eta;
+    if (!etaA && !etaB) return 0;
+    if (!etaA) return 1;
+    if (!etaB) return -1;
+    return etaA < etaB ? -1 : 1;
+  });
 
 export const getLineColor = (
   companies: Company[],
