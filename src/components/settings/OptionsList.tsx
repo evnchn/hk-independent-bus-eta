@@ -33,6 +33,8 @@ import {
   UpdateDisabled as UpdateDisabledIcon,
   FormatSize as FormatSizeIcon,
   LooksOneRounded as LooksOneRoundedIcon,
+  Animation as AnimationIcon,
+  MotionPhotosOff as MotionPhotosOffIcon,
 } from "@mui/icons-material";
 import { ETA_FORMAT_STR } from "../../constants";
 import AppContext from "../../context/AppContext";
@@ -69,6 +71,8 @@ const OptionsList = ({ goToManage }: OptionsListProps) => {
     toggleAnnotateScheduled,
     isRecentSearchShown,
     toggleIsRecentSearchShown,
+    reduceMotion,
+    toggleReduceMotion,
   } = useContext(AppContext);
   const { t } = useTranslation();
 
@@ -253,6 +257,22 @@ const OptionsList = ({ goToManage }: OptionsListProps) => {
         <ListItemText
           primary={t("搜尋記錄")}
           secondary={t(isRecentSearchShown ? "開啟" : "關閉")}
+        />
+      </ListItemButton>
+      <ListItemButton
+        onClick={() => {
+          vibrate(vibrateDuration);
+          toggleReduceMotion();
+        }}
+      >
+        <ListItemAvatar>
+          <Avatar>
+            {reduceMotion ? <MotionPhotosOffIcon /> : <AnimationIcon />}
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={t("動畫效果")}
+          secondary={t(reduceMotion ? "關閉" : "開啟")}
         />
       </ListItemButton>
       <ListItemButton
