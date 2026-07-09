@@ -8,15 +8,22 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_SEARCH_RANGE_OPTIONS, getDistanceWithUnit } from "../../utils";
-import { useContext, useState } from "react";
+import { lazy, Suspense, useContext, useState } from "react";
 import AppContext from "../../context/AppContext";
-import RangeMapDialog from "./RangeMapDialog";
 import { grey } from "@mui/material/colors";
+
+// Lazy-load the range-map picker (pulls in maplibre-gl, ~300 KB gz) so the
+// map bundle only loads when the dialog is first opened, not on home landing.
+const RangeMapDialog = lazy(() => import("./RangeMapDialog"));
 
 const SearchRangeController = () => {
   const { t } = useTranslation();
   const { searchRange, setSearchRange } = useContext(AppContext);
   const [open, setOpen] = useState<boolean>(false);
+  // Mount the (lazy) dialog once it's first opened and keep it mounted, so the
+  // MUI close/exit transition still runs on `open={false}` — while maplibre
+  // stays off the home-landing critical path until that first open.
+  const [mounted, setMounted] = useState<boolean>(false);
 
   return (
     <Box sx={rootSx}>
@@ -31,6 +38,7 @@ const SearchRangeController = () => {
           if (DEFAULT_SEARCH_RANGE_OPTIONS.includes(value)) {
             setSearchRange(value);
           } else {
+            setMounted(true);
             setOpen(true);
           }
         }}
@@ -64,7 +72,11 @@ const SearchRangeController = () => {
             `(${searchRange})`}
         </ToggleButton>
       </ToggleButtonGroup>
-      <RangeMapDialog open={open} onClose={() => setOpen(false)} />
+      {mounted && (
+        <Suspense fallback={null}>
+          <RangeMapDialog open={open} onClose={() => setOpen(false)} />
+        </Suspense>
+      )}
     </Box>
   );
 };
