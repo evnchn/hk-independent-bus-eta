@@ -29,7 +29,12 @@ import { DeviceOrientationPermission } from "react-world-compass";
 import useLanguage from "../hooks/useTranslation";
 
 type GeoPermission =
-  "opening" | "force-opening" | "granted" | "denied" | "closed" | null;
+  | "opening"
+  | "force-opening"
+  | "granted"
+  | "denied"
+  | "closed"
+  | null;
 
 export interface AppState {
   searchRoute: string;
@@ -105,6 +110,10 @@ export interface AppState {
    * Is input currently being entered
    */
   isSearching: boolean;
+  /**
+   * Sort saved/collection routes by earliest ETA instead of manual order
+   */
+  sortSavedRoutesByEta: boolean;
 }
 
 interface AppContextValue extends AppState {
@@ -137,6 +146,7 @@ interface AppContextValue extends AppState {
   updateRefreshInterval: (interval: number) => void;
   toggleAnnotateScheduled: () => void;
   toggleIsRecentSearchShown: () => void;
+  toggleSortSavedRoutesByEta: () => void;
   changeLanguage: (lang: Language) => void;
   setFontSize: (fontSize: number) => void;
   importAppState: (appState: AppState) => void;
@@ -268,6 +278,9 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
         localStorage.getItem("searchRange") ?? `${DEFAULT_SEARCH_RANGE}`
       ),
       isSearching: false,
+      sortSavedRoutesByEta: !!JSON.parse(
+        localStorage.getItem("sortSavedRoutesByEta") ?? "false"
+      ),
     };
   };
   const geolocation = useRef<GeoLocation>(_geolocation);
@@ -602,6 +615,15 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     );
   }, []);
 
+  const toggleSortSavedRoutesByEta = useCallback(() => {
+    setStateRaw(
+      produce((state: State) => {
+        const prev = state.sortSavedRoutesByEta;
+        state.sortSavedRoutesByEta = !prev;
+      })
+    );
+  }, []);
+
   const changeLanguage = useCallback(
     (lang: Language) => {
       i18n.changeLanguage(lang);
@@ -802,6 +824,13 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
     localStorage.setItem("searchRange", JSON.stringify(state.searchRange));
   }, [state.searchRange]);
 
+  useEffect(() => {
+    localStorage.setItem(
+      "sortSavedRoutesByEta",
+      JSON.stringify(state.sortSavedRoutesByEta)
+    );
+  }, [state.sortSavedRoutesByEta]);
+
   const contextValue: AppContextValue = useMemo(
     () => ({
       ...state,
@@ -829,6 +858,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
       updateRefreshInterval,
       toggleAnnotateScheduled,
       toggleIsRecentSearchShown,
+      toggleSortSavedRoutesByEta,
       changeLanguage,
       setFontSize,
       importAppState,
@@ -862,6 +892,7 @@ export const AppContextProvider = ({ children }: AppContextProviderProps) => {
       updateRefreshInterval,
       toggleAnnotateScheduled,
       toggleIsRecentSearchShown,
+      toggleSortSavedRoutesByEta,
       changeLanguage,
       setFontSize,
       importAppState,

@@ -2,11 +2,12 @@ import { Box, List, SxProps, Theme, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import SuccinctTimeReport from "../SuccinctTimeReport";
 import { EtaDb, Location, RouteList, StopList } from "hk-bus-eta";
-import { formatHandling } from "../../../utils";
+import { formatHandling, sortRoutesByEta } from "../../../utils";
 import { useContext, useMemo } from "react";
 import AppContext from "../../../context/AppContext";
 import { RouteCollection } from "../../../@types/types";
 import DbContext from "../../../context/DbContext";
+import { useRoutesEtas } from "../../../hooks/useRoutesEtas";
 
 interface CollectionRouteListProps {
   collection: RouteCollection;
@@ -18,7 +19,8 @@ const CollectionRouteList = ({
   isFocus,
 }: CollectionRouteListProps) => {
   const { t } = useTranslation();
-  const { geolocation, isRouteFilter } = useContext(AppContext);
+  const { geolocation, isRouteFilter, sortSavedRoutesByEta } =
+    useContext(AppContext);
   const {
     db: { routeList, stopList, serviceDayMap },
     isTodayHoliday,
@@ -45,8 +47,20 @@ const CollectionRouteList = ({
       serviceDayMap,
     ]
   );
+  const activeRoutes = useMemo(() => routes.filter(Boolean), [routes]);
+  const routeEtas = useRoutesEtas(
+    activeRoutes,
+    !sortSavedRoutesByEta || !isFocus
+  );
+  const displayRoutes = useMemo(
+    () =>
+      sortSavedRoutesByEta
+        ? sortRoutesByEta(activeRoutes, routeEtas)
+        : activeRoutes,
+    [sortSavedRoutesByEta, activeRoutes, routeEtas]
+  );
 
-  const noRoutes = useMemo(() => routes.every((routeId) => !routeId), [routes]);
+  const noRoutes = useMemo(() => displayRoutes.length === 0, [displayRoutes]);
 
   if (!isFocus) {
     return <></>;
@@ -64,15 +78,12 @@ const CollectionRouteList = ({
 
   return (
     <List disablePadding sx={{ minHeight: "100dvh" }}>
-      {routes.map(
-        (selectedRoute, idx) =>
-          Boolean(selectedRoute) && (
-            <SuccinctTimeReport
-              key={`route-shortcut-${idx}`}
-              routeId={selectedRoute}
-            />
-          )
-      )}
+      {displayRoutes.map((selectedRoute) => (
+        <SuccinctTimeReport
+          key={`route-shortcut-${selectedRoute}`}
+          routeId={selectedRoute}
+        />
+      ))}
     </List>
   );
 };

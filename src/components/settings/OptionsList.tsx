@@ -33,6 +33,7 @@ import {
   UpdateDisabled as UpdateDisabledIcon,
   FormatSize as FormatSizeIcon,
   LooksOneRounded as LooksOneRoundedIcon,
+  AccessTime as AccessTimeIcon,
 } from "@mui/icons-material";
 import { ETA_FORMAT_STR } from "../../constants";
 import AppContext from "../../context/AppContext";
@@ -69,6 +70,8 @@ const OptionsList = ({ goToManage }: OptionsListProps) => {
     toggleAnnotateScheduled,
     isRecentSearchShown,
     toggleIsRecentSearchShown,
+    sortSavedRoutesByEta,
+    toggleSortSavedRoutesByEta,
   } = useContext(AppContext);
   const { t } = useTranslation();
 
@@ -115,6 +118,22 @@ const OptionsList = ({ goToManage }: OptionsListProps) => {
           </Avatar>
         </ListItemAvatar>
         <ListItemText primary={t("巴士排序")} secondary={t(busSortOrder)} />
+      </ListItemButton>
+      <ListItemButton
+        onClick={() => {
+          vibrate(vibrateDuration);
+          toggleSortSavedRoutesByEta();
+        }}
+      >
+        <ListItemAvatar>
+          <Avatar>
+            {sortSavedRoutesByEta ? <AccessTimeIcon /> : <SortIcon />}
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={t("收藏路線排序")}
+          secondary={t(sortSavedRoutesByEta ? "最快到達" : "自訂次序")}
+        />
       </ListItemButton>
       <ListItemButton onClick={() => {}}>
         <ListItemAvatar>
