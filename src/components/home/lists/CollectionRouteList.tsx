@@ -48,7 +48,10 @@ const CollectionRouteList = ({
     ]
   );
   const activeRoutes = useMemo(() => routes.filter(Boolean), [routes]);
-  const routeEtas = useRoutesEtas(activeRoutes, !sortSavedRoutesByEta);
+  const routeEtas = useRoutesEtas(
+    activeRoutes,
+    !sortSavedRoutesByEta || !isFocus
+  );
   const displayRoutes = useMemo(
     () =>
       sortSavedRoutesByEta

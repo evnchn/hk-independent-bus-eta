@@ -582,6 +582,7 @@ export const sortRoutesByEta = (
     if (!etaA && !etaB) return 0;
     if (!etaA) return 1;
     if (!etaB) return -1;
+    if (etaA === etaB) return 0;
     return etaA < etaB ? -1 : 1;
   });
 

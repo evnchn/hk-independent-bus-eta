@@ -25,7 +25,7 @@ export const useRoutesEtas = (
       routeIds.map((routeId) => {
         const [routeKey, seq] = routeId.split("/");
         return fetchEtas({
-          ...routeList[routeKey],
+          ...(routeList[routeKey] ?? DefaultRoute),
           seq: parseInt(seq, 10),
           stopList,
           language,
@@ -59,6 +59,17 @@ export const useRoutesEtas = (
   }, [disabled, fetchData, refreshInterval]);
 
   return etas;
+};
+
+const DefaultRoute = {
+  co: [""],
+  stops: { "": [""] },
+  dest: { zh: "", en: "" },
+  bound: "",
+  nlbId: 0,
+  gtfsId: "",
+  fares: [],
+  faresHoliday: [],
 };
 
 export default useRoutesEtas;

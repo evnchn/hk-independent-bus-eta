@@ -57,7 +57,10 @@ const SavedRouteList = ({ isFocus }: SavedRouteListProps) => {
     () => savedRoutes.filter(Boolean),
     [savedRoutes]
   );
-  const routeEtas = useRoutesEtas(activeRoutes, !sortSavedRoutesByEta);
+  const routeEtas = useRoutesEtas(
+    activeRoutes,
+    !sortSavedRoutesByEta || !isFocus
+  );
   const displayRoutes = useMemo(
     () =>
       sortSavedRoutesByEta
