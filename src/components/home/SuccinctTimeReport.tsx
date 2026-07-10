@@ -4,7 +4,6 @@ import {
 } from "@mui/icons-material";
 import {
   Box,
-  Divider,
   IconButton,
   ListItem,
   ListItemText,
@@ -133,78 +132,75 @@ const SuccinctTimeReport = ({
   }
 
   return (
-    <>
-      <ListItem onClick={handleClick} sx={rootSx}>
-        <ListItemText
-          primary={
-            <Box overflow="hidden">
-              <RouteNo
-                routeNo={language === "zh" ? t(routeNo) : routeNo}
-                fontSize={co[0] === "mtr" ? "1.1rem" : undefined}
-              />
-              {parseInt(serviceType, 10) >= 2 && (
-                <Typography variant="caption" sx={specialTripSx}>
-                  {t("特別班")}
-                </Typography>
-              )}
-            </Box>
-          }
-          secondary={
-            <Typography component="h4" variant="caption" sx={companySx}>
-              {co.map((co) => t(co)).join("+")}
-            </Typography>
-          }
-        />
-        <ListItemText
-          primary={
-            <Typography
-              component="h3"
-              variant="h6"
-              color="textPrimary"
-              sx={fromToWrapperSx}
-            >
-              <span>{t("往")}</span>
-              <b>{toProperCase(dest[language])}</b>
-            </Typography>
-          }
-          secondary={
-            <DistAndFare
-              name={toProperCase(stop.name[language])}
-              location={stop.location}
-              fares={fares}
-              faresHoliday={faresHoliday}
-              joyYouFare={joyYouFare}
-              seq={parseInt(seq, 10)}
+    <ListItem divider onClick={handleClick} sx={rootSx}>
+      <ListItemText
+        primary={
+          <Box overflow="hidden">
+            <RouteNo
+              routeNo={language === "zh" ? t(routeNo) : routeNo}
+              fontSize={co[0] === "mtr" ? "1.1rem" : undefined}
             />
-          }
-          secondaryTypographyProps={{
-            component: "h4",
-            variant: "subtitle2",
-          }}
-          sx={routeDestSx}
-        />
-        {mode === "time" && (
-          <SuccinctEtas
-            routeId={routeId}
-            value={etas}
-            isEndOfTrainLine={isEndOfTrainLine}
+            {parseInt(serviceType, 10) >= 2 && (
+              <Typography variant="caption" sx={specialTripSx}>
+                {t("特別班")}
+              </Typography>
+            )}
+          </Box>
+        }
+        secondary={
+          <Typography component="h4" variant="caption" sx={companySx}>
+            {co.map((co) => t(co)).join("+")}
+          </Typography>
+        }
+      />
+      <ListItemText
+        primary={
+          <Typography
+            component="h3"
+            variant="h6"
+            color="textPrimary"
+            sx={fromToWrapperSx}
+          >
+            <span>{t("往")}</span>
+            <b>{toProperCase(dest[language])}</b>
+          </Typography>
+        }
+        secondary={
+          <DistAndFare
+            name={toProperCase(stop.name[language])}
+            location={stop.location}
+            fares={fares}
+            faresHoliday={faresHoliday}
+            joyYouFare={joyYouFare}
+            seq={parseInt(seq, 10)}
           />
-        )}
-        {mode === "order" && (
-          <Box sx={iconContainerSx}>
-            <ReorderIcon />
-          </Box>
-        )}
-        {mode === "edit" && (
-          <Box sx={iconContainerSx}>
-            <IconButton onClick={(e) => onDelete && onDelete(e)}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        )}
-      </ListItem>
-      <Divider />
-    </>
+        }
+        secondaryTypographyProps={{
+          component: "h4",
+          variant: "subtitle2",
+        }}
+        sx={routeDestSx}
+      />
+      {mode === "time" && (
+        <SuccinctEtas
+          routeId={routeId}
+          value={etas}
+          isEndOfTrainLine={isEndOfTrainLine}
+        />
+      )}
+      {mode === "order" && (
+        <Box sx={iconContainerSx}>
+          <ReorderIcon />
+        </Box>
+      )}
+      {mode === "edit" && (
+        <Box sx={iconContainerSx}>
+          <IconButton onClick={(e) => onDelete && onDelete(e)}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      )}
+    </ListItem>
   );
 };
 

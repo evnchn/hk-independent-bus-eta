@@ -123,388 +123,434 @@ const Settings = () => {
       )}`}</Typography>
       <List sx={{ py: 0 }}>
         {!checkAppInstalled() && !iOSRNWebView() && (
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                vibrate(vibrateDuration);
+                setTimeout(() => setIsOpenInstallDialog(true), 0);
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar>
+                  <GetAppIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={t("安裝")}
+                secondary={t("安裝巴士預報 App 到裝置")}
+              />
+            </ListItemButton>
+          </ListItem>
+        )}
+        {(import.meta.env.VITE_COMMIT_HASH || import.meta.env.VITE_VERSION) && (
+          <ListItem disablePadding>
+            <ListItemButton onClick={updateApp}>
+              <ListItemAvatar>
+                <Avatar>
+                  <InfoIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={`${t("版本")}: ${
+                  import.meta.env.VITE_VERSION || "unknown"
+                }${
+                  import.meta.env.VITE_COMMIT_HASH
+                    ? ` - ${import.meta.env.VITE_COMMIT_HASH}`
+                    : ""
+                }`}
+                secondary={import.meta.env.VITE_COMMIT_MESSAGE || ""}
+              />
+            </ListItemButton>
+          </ListItem>
+        )}
+        <ListItem disablePadding>
           <ListItemButton
             onClick={() => {
               vibrate(vibrateDuration);
-              setTimeout(() => setIsOpenInstallDialog(true), 0);
+              setUpdating(true);
+              renewDb();
             }}
           >
             <ListItemAvatar>
               <Avatar>
-                <GetAppIcon />
+                <BuildIcon />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={t("安裝")}
-              secondary={t("安裝巴士預報 App 到裝置")}
+              primary={
+                `${t("更新路線資料庫")}: ` +
+                `${schemaVersion} - ${versionMd5.slice(0, 6)}`
+              }
+              secondary={
+                t("更新時間") +
+                ": " +
+                new Date(updateTime)
+                  .toLocaleString(undefined, { hour12: false })
+                  .replace(/,\s*/, " ")
+              }
             />
           </ListItemButton>
-        )}
-        {(import.meta.env.VITE_COMMIT_HASH || import.meta.env.VITE_VERSION) && (
-          <ListItemButton onClick={updateApp}>
+        </ListItem>
+        <Divider component="li" />
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              if (geoPermission === "granted") {
+                updateGeoPermission("closed");
+              } else if (
+                geoPermission === "force-opening" ||
+                geoPermission === "opening"
+              ) {
+                updateGeoPermission("closed");
+              } else {
+                updateGeoPermission("force-opening", () => {
+                  setShowGeoPermissionDenied(true);
+                });
+              }
+            }}
+          >
             <ListItemAvatar>
               <Avatar>
-                <InfoIcon />
+                {geoPermission === "granted" ? (
+                  <LocationOnIcon />
+                ) : (
+                  <LocationOffIcon />
+                )}
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={`${t("版本")}: ${
-                import.meta.env.VITE_VERSION || "unknown"
-              }${
-                import.meta.env.VITE_COMMIT_HASH
-                  ? ` - ${import.meta.env.VITE_COMMIT_HASH}`
-                  : ""
-              }`}
-              secondary={import.meta.env.VITE_COMMIT_MESSAGE || ""}
+              primary={t("地理位置定位功能")}
+              secondary={t(
+                geoPermission === "granted"
+                  ? "開啟"
+                  : geoPermission === "opening" ||
+                      geoPermission === "force-opening"
+                    ? "開啟中..."
+                    : "關閉"
+              )}
             />
           </ListItemButton>
-        )}
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            setUpdating(true);
-            renewDb();
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <BuildIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              `${t("更新路線資料庫")}: ` +
-              `${schemaVersion} - ${versionMd5.slice(0, 6)}`
-            }
-            secondary={
-              t("更新時間") +
-              ": " +
-              new Date(updateTime)
-                .toLocaleString(undefined, { hour12: false })
-                .replace(/,\s*/, " ")
-            }
-          />
-        </ListItemButton>
-        <Divider />
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            if (geoPermission === "granted") {
-              updateGeoPermission("closed");
-            } else if (
-              geoPermission === "force-opening" ||
-              geoPermission === "opening"
-            ) {
-              updateGeoPermission("closed");
-            } else {
-              updateGeoPermission("force-opening", () => {
-                setShowGeoPermissionDenied(true);
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              toggleAutoDbRenew();
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>{autoRenew ? <SyncIcon /> : <SyncDisabledIcon />}</Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("自動更新路線資料")}
+              secondary={t(autoRenew ? "開啟" : "關閉")}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              setIsPersonalizeDialog(true);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <InsertEmoticonIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("個性化設定")}
+              secondary={t("日夜模式、時間格式、路線次序等")}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              navigate(`/${language}/export`);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <SendToMobileIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={t("資料匯出")} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              navigate(`/${language}/import`);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <SecurityUpdateIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={t("資料匯入")} />
+          </ListItemButton>
+        </ListItem>
+        <Divider component="li" />
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              triggerShare(
+                `https://${window.location.hostname}`,
+                t("巴士到站預報 App")
+              ).then(() => {
+                if (navigator.clipboard) setIsCopied(true);
               });
-            }
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              {geoPermission === "granted" ? (
-                <LocationOnIcon />
-              ) : (
-                <LocationOffIcon />
-              )}
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("地理位置定位功能")}
-            secondary={t(
-              geoPermission === "granted"
-                ? "開啟"
-                : geoPermission === "opening" ||
-                    geoPermission === "force-opening"
-                  ? "開啟中..."
-                  : "關閉"
-            )}
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            toggleAutoDbRenew();
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>{autoRenew ? <SyncIcon /> : <SyncDisabledIcon />}</Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("自動更新路線資料")}
-            secondary={t(autoRenew ? "開啟" : "關閉")}
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            setIsPersonalizeDialog(true);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <InsertEmoticonIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("個性化設定")}
-            secondary={t("日夜模式、時間格式、路線次序等")}
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            navigate(`/${language}/export`);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <SendToMobileIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("資料匯出")} />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            navigate(`/${language}/import`);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <SecurityUpdateIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("資料匯入")} />
-        </ListItemButton>
-        <Divider />
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            triggerShare(
-              `https://${window.location.hostname}`,
-              t("巴士到站預報 App")
-            ).then(() => {
-              if (navigator.clipboard) setIsCopied(true);
-            });
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <ShareIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("複製應用程式鏈結")}
-            secondary={t("經不同媒介分享給親友")}
-          />
-        </ListItemButton>
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <ShareIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("複製應用程式鏈結")}
+              secondary={t("經不同媒介分享給親友")}
+            />
+          </ListItemButton>
+        </ListItem>
         {
           // @ts-expect-error harmonyBridger exists in Harmony OS only
           typeof harmonyBridger === "undefined" && (
-            <ListItemButton
-              onClick={() => {
-                vibrate(vibrateDuration);
-                openUrl(
-                  isApple
-                    ? `https://watch.hkbus.app/`
-                    : `https://wear.hkbus.app/`
-                );
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <WatchIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={t("智能手錶應用程式")}
-                secondary={t("支援 WearOS 及 WatchOS 平台")}
-              />
-            </ListItemButton>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  vibrate(vibrateDuration);
+                  openUrl(
+                    isApple
+                      ? `https://watch.hkbus.app/`
+                      : `https://wear.hkbus.app/`
+                  );
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <WatchIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={t("智能手錶應用程式")}
+                  secondary={t("支援 WearOS 及 WatchOS 平台")}
+                />
+              </ListItemButton>
+            </ListItem>
           )
         }
         {!iOSRNWebView() ? (
-          <ListItemButton
-            onClick={() => {
-              vibrate(vibrateDuration);
-              openUrl("https://t.me/hkbusapp");
-            }}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <TelegramIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={t("Telegram 交流區")}
-              secondary={t("歡迎意見及技術交流")}
-            />
-          </ListItemButton>
-        ) : (
-          <ListItemButton
-            onClick={() => {
-              vibrate(vibrateDuration);
-              navigate(`/${language}/support`);
-            }}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <HelpIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={t("協助")}
-              secondary={t("歡迎意見及技術交流")}
-            />
-          </ListItemButton>
-        )}
-        {!iOSRNWebView() && (
-          <ListItemButton onClick={toggleAnalytics}>
-            <ListItemAvatar>
-              <Avatar>
-                <BarChartIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={"Google Analytics"}
-              secondary={t(analytics ? "開啟" : "關閉")}
-            />
-          </ListItemButton>
-        )}
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            openUrl(
-              "https://datastudio.google.com/embed/reporting/de590428-525e-4865-9d37-a955204b807a/page/psfZC"
-            );
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <SsidChartIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("統計數據彙整")}
-            secondary={t("整理從 Google 收集的數據")}
-          />
-        </ListItemButton>
-        {
-          // @ts-expect-error harmonyBridger exists in Harmony OS only
-          !iOSRNWebView() && typeof harmonyBridger === "undefined" && (
+          <ListItem disablePadding>
             <ListItemButton
               onClick={() => {
                 vibrate(vibrateDuration);
-                openUrl(Donations[donationId].url[language]);
+                openUrl("https://t.me/hkbusapp");
               }}
             >
               <ListItemAvatar>
                 <Avatar>
-                  <MonetizationOnIcon />
+                  <TelegramIcon />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText
-                primary={t("捐款支持")}
-                secondary={Donations[donationId].description[language]}
+                primary={t("Telegram 交流區")}
+                secondary={t("歡迎意見及技術交流")}
               />
             </ListItemButton>
+          </ListItem>
+        ) : (
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                vibrate(vibrateDuration);
+                navigate(`/${language}/support`);
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar>
+                  <HelpIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={t("協助")}
+                secondary={t("歡迎意見及技術交流")}
+              />
+            </ListItemButton>
+          </ListItem>
+        )}
+        {!iOSRNWebView() && (
+          <ListItem disablePadding>
+            <ListItemButton onClick={toggleAnalytics}>
+              <ListItemAvatar>
+                <Avatar>
+                  <BarChartIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={"Google Analytics"}
+                secondary={t(analytics ? "開啟" : "關閉")}
+              />
+            </ListItemButton>
+          </ListItem>
+        )}
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              openUrl(
+                "https://datastudio.google.com/embed/reporting/de590428-525e-4865-9d37-a955204b807a/page/psfZC"
+              );
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <SsidChartIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("統計數據彙整")}
+              secondary={t("整理從 Google 收集的數據")}
+            />
+          </ListItemButton>
+        </ListItem>
+        {
+          // @ts-expect-error harmonyBridger exists in Harmony OS only
+          !iOSRNWebView() && typeof harmonyBridger === "undefined" && (
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  vibrate(vibrateDuration);
+                  openUrl(Donations[donationId].url[language]);
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <MonetizationOnIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={t("捐款支持")}
+                  secondary={Donations[donationId].description[language]}
+                />
+              </ListItemButton>
+            </ListItem>
           )
         }
-        <Divider />
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            openUrl(
-              import.meta.env.VITE_REPO_URL ||
-                `https://github.com/hkbus/hk-independent-bus-eta`
-            );
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <GitHubIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("Source code")}
-            secondary={"GPL-3.0 License"}
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            openUrl("/faq");
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <FaqIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("FAQ")}
-            secondary="Eng Version is currently not available"
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            openUrl(`https://instagram.com/chan_gua`);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar sx={iconSx} src="/img/logo128.png" alt="App Logo"></Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("圖標來源")} secondary={"陳瓜 Chan Gua"} />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            openUrl(`https://github.com/anscg/hk-pmtiles-generation`);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <MapIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("地圖資源")}
-            secondary={"HK pmtiles Generation by @anscg"}
-          />
-        </ListItemButton>
-        <ListItemButton
-          component={"a"}
-          href={`/${language}/privacy`}
-          onClick={() => {
-            vibrate(vibrateDuration);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <FingerprintIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("隱私權聲明")} />
-        </ListItemButton>
-        <ListItemButton
-          component={"a"}
-          href={`/${language}/terms`}
-          onClick={() => {
-            vibrate(vibrateDuration);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <GavelIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("條款")} />
-        </ListItemButton>
+        <Divider component="li" />
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              openUrl(
+                import.meta.env.VITE_REPO_URL ||
+                  `https://github.com/hkbus/hk-independent-bus-eta`
+              );
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <GitHubIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("Source code")}
+              secondary={"GPL-3.0 License"}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              openUrl("/faq");
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <FaqIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("FAQ")}
+              secondary="Eng Version is currently not available"
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              openUrl(`https://instagram.com/chan_gua`);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar
+                sx={iconSx}
+                src="/img/logo128.png"
+                alt="App Logo"
+              ></Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={t("圖標來源")} secondary={"陳瓜 Chan Gua"} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              openUrl(`https://github.com/anscg/hk-pmtiles-generation`);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <MapIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("地圖資源")}
+              secondary={"HK pmtiles Generation by @anscg"}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            component={"a"}
+            href={`/${language}/privacy`}
+            onClick={() => {
+              vibrate(vibrateDuration);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <FingerprintIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={t("隱私權聲明")} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            component={"a"}
+            href={`/${language}/terms`}
+            onClick={() => {
+              vibrate(vibrateDuration);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <GavelIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={t("條款")} />
+          </ListItemButton>
+        </ListItem>
         <ListItem onClick={toggleDebug}>
           <ListItemAvatar>
             <Avatar>
