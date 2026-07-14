@@ -176,6 +176,31 @@ const Settings = () => {
   const geoOpening =
     geoPermission === "opening" || geoPermission === "force-opening";
 
+  // energy score /6: geo -2 · map -1 · auto-refresh -1 · polling <20s -1
+  const powerScore =
+    6 -
+    (geoPermission === "granted" ? 2 : 0) -
+    (!energyMode ? 1 : 0) -
+    (autoRenew ? 1 : 0) -
+    (refreshInterval < 20000 ? 1 : 0);
+  // privacy score /4: analytics -2 (sends data out) · search history -1 (local)
+  const privacyScore = 4 - (analytics ? 2 : 0) - (isRecentSearchShown ? 1 : 0);
+  // grade colours worst->best; each clears WCAG-AA (>=3:1) on its own bg
+  const ENERGY_COLORS = [
+    { light: "#616161", dark: "#9E9E9E" },
+    { light: "#D32F2F", dark: "#EF5350" },
+    { light: "#E65100", dark: "#FB8C00" },
+    { light: "#B26A00", dark: "#FDD835" },
+    { light: "#558B2F", dark: "#9CCC65" },
+    { light: "#2E7D32", dark: "#66BB6A" },
+  ];
+  const PRIVACY_COLORS = [
+    { light: "#D32F2F", dark: "#EF5350" },
+    { light: "#E65100", dark: "#FB8C00" },
+    { light: "#558B2F", dark: "#9CCC65" },
+    { light: "#2E7D32", dark: "#66BB6A" },
+  ];
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -281,7 +306,16 @@ const Settings = () => {
         </ListItemButton>
 
         <ListSubheader sx={subheaderSx} disableSticky>
-          {t("能源效益")}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            {t("能源效益")}
+            <Meter score={powerScore} max={6} colors={ENERGY_COLORS} />
+          </Box>
         </ListSubheader>
         <ListItemButton
           onClick={() => {
@@ -543,7 +577,16 @@ const Settings = () => {
         }
 
         <ListSubheader sx={subheaderSx} disableSticky>
-          {t("私隱")}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            {t("私隱")}
+            <Meter score={privacyScore} max={4} colors={PRIVACY_COLORS} />
+          </Box>
         </ListSubheader>
         {!iOSRNWebView() && (
           <ListItemButton onClick={toggleAnalytics}>
@@ -744,6 +787,39 @@ const Settings = () => {
 };
 
 export default Settings;
+
+// N-cell score bar; score = lit-cell count, theme-adaptive fills clear WCAG-AA
+const Meter = ({
+  score,
+  max,
+  colors,
+}: {
+  score: number;
+  max: number;
+  colors: { light: string; dark: string }[];
+}) => {
+  const c = colors[Math.max(0, Math.min(colors.length - 1, score - 1))];
+  return (
+    <Box aria-hidden sx={{ display: "flex", gap: "3px", alignItems: "center" }}>
+      {Array.from({ length: max }, (_, i) => (
+        <Box
+          key={i}
+          sx={{
+            width: 6,
+            height: 14,
+            borderRadius: "2px",
+            bgcolor: (theme) =>
+              i < score
+                ? theme.palette.mode === "dark"
+                  ? c.dark
+                  : c.light
+                : theme.palette.action.disabledBackground,
+          }}
+        />
+      ))}
+    </Box>
+  );
+};
 
 const rootSx: SxProps<Theme> = {
   background: (theme) =>
