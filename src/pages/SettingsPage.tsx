@@ -2,12 +2,14 @@ import { useContext, useEffect, useState, useMemo, useCallback } from "react";
 import AppContext from "../context/AppContext";
 import {
   Avatar,
-  Divider,
+  Box,
   List,
   ListItem,
   ListItemButton,
   ListItemAvatar,
   ListItemText,
+  ListSubheader,
+  Slider,
   Paper,
   Snackbar,
   Typography,
@@ -26,7 +28,6 @@ import {
   Telegram as TelegramIcon,
   Fingerprint as FingerprintIcon,
   Gavel as GavelIcon,
-  InsertEmoticon as InsertEmoticonIcon,
   SsidChart as SsidChartIcon,
   BarChart as BarChartIcon,
   Info as InfoIcon,
@@ -38,6 +39,13 @@ import {
   SecurityUpdate as SecurityUpdateIcon,
   Watch as WatchIcon,
   Map as MapIcon,
+  NavigateNext as NavigateNextIcon,
+  OpenInNew as OpenInNewIcon,
+  Bookmarks as BookmarksIcon,
+  Delete as DeleteIcon,
+  History as HistoryIcon,
+  HourglassTop as HourglassTopIcon,
+  Tune as TuneIcon,
 } from "@mui/icons-material";
 import { visuallyHidden } from "@mui/utils";
 import { useTranslation } from "react-i18next";
@@ -71,14 +79,22 @@ const Settings = () => {
     toggleAnalytics,
     analytics,
     openUrl,
+    energyMode,
+    toggleEnergyMode,
+    resetUsageRecord,
+    isRecentSearchShown,
+    toggleIsRecentSearchShown,
+    refreshInterval,
+    updateRefreshInterval,
   } = useContext(AppContext);
-  const { debug, toggleDebug } = useContext(ReactNativeContext);
   const { os } = useContext(ReactNativeContext);
   const [updating, setUpdating] = useState(false);
   const [showGeoPermissionDenied, setShowGeoPermissionDenied] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isOpenInstallDialog, setIsOpenInstallDialog] = useState(false);
-  const [isPersonalizeDialog, setIsPersonalizeDialog] = useState(false);
+  const [personalizeTab, setPersonalizeTab] = useState<
+    "function" | "appearance" | "manage" | null
+  >(null);
 
   const { t } = useTranslation();
   const language = useLanguage();
@@ -88,6 +104,76 @@ const Settings = () => {
   );
   const isApple =
     os === "ios" || /iPad|iPhone|iPod|Mac/.test(navigator.userAgent);
+
+  const showInstall = !checkAppInstalled() && !iOSRNWebView();
+  const notHarmony =
+    // @ts-expect-error harmonyBridger exists in Harmony OS only
+    typeof harmonyBridger === "undefined";
+  const watchButton = (
+    <ListItemButton
+      onClick={() => {
+        vibrate(vibrateDuration);
+        openUrl(
+          isApple ? `https://watch.hkbus.app/` : `https://wear.hkbus.app/`
+        );
+      }}
+    >
+      <ListItemAvatar>
+        <Avatar>
+          <WatchIcon />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={t("智能手錶應用程式")}
+        secondary={t("支援 WearOS 及 WatchOS 平台")}
+      />
+      <OpenInNewIcon fontSize="small" sx={hintSx} />
+    </ListItemButton>
+  );
+  const installButton = (
+    <ListItemButton
+      onClick={() => {
+        vibrate(vibrateDuration);
+        setTimeout(() => setIsOpenInstallDialog(true), 0);
+      }}
+    >
+      <ListItemAvatar>
+        <Avatar>
+          <GetAppIcon />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={t("安裝")}
+        secondary={t("安裝巴士預報 App 到裝置")}
+      />
+    </ListItemButton>
+  );
+  const shareButton = (
+    <ListItemButton
+      onClick={() => {
+        vibrate(vibrateDuration);
+        triggerShare(
+          `https://${window.location.hostname}`,
+          t("巴士到站預報 App")
+        ).then(() => {
+          if (navigator.clipboard) setIsCopied(true);
+        });
+      }}
+    >
+      <ListItemAvatar>
+        <Avatar>
+          <ShareIcon />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText
+        primary={t("複製應用程式鏈結")}
+        secondary={t("經不同媒介分享給親友")}
+      />
+    </ListItemButton>
+  );
+
+  const geoOpening =
+    geoPermission === "opening" || geoPermission === "force-opening";
 
   const navigate = useNavigate();
 
@@ -122,43 +208,50 @@ const Settings = () => {
         AppTitle
       )}`}</Typography>
       <List sx={{ py: 0 }}>
-        {!checkAppInstalled() && !iOSRNWebView() && (
-          <ListItemButton
-            onClick={() => {
-              vibrate(vibrateDuration);
-              setTimeout(() => setIsOpenInstallDialog(true), 0);
-            }}
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <GetAppIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={t("安裝")}
-              secondary={t("安裝巴士預報 App 到裝置")}
-            />
-          </ListItemButton>
-        )}
-        {(import.meta.env.VITE_COMMIT_HASH || import.meta.env.VITE_VERSION) && (
-          <ListItemButton onClick={updateApp}>
-            <ListItemAvatar>
-              <Avatar>
-                <InfoIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={`${t("版本")}: ${
-                import.meta.env.VITE_VERSION || "unknown"
-              }${
-                import.meta.env.VITE_COMMIT_HASH
-                  ? ` - ${import.meta.env.VITE_COMMIT_HASH}`
-                  : ""
-              }`}
-              secondary={import.meta.env.VITE_COMMIT_MESSAGE || ""}
-            />
-          </ListItemButton>
-        )}
+        <ListSubheader sx={subheaderSx} disableSticky>
+          {t("應用程式")}
+        </ListSubheader>
+        {showInstall ? installButton : notHarmony && watchButton}
+        {shareButton}
+        {showInstall && notHarmony && watchButton}
+        <ListItemButton
+          onClick={() => {
+            vibrate(vibrateDuration);
+            setPersonalizeTab("function");
+          }}
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <TuneIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={t("自定義")} secondary={t("功能與外貌")} />
+          <NavigateNextIcon sx={hintSx} />
+        </ListItemButton>
+
+        <ListSubheader sx={subheaderSx} disableSticky>
+          {t("版本資料")}
+          <Box component="span" sx={sectionHintSx}>
+            {t("點擊以即時更新")}
+          </Box>
+        </ListSubheader>
+        <ListItemButton onClick={updateApp}>
+          <ListItemAvatar>
+            <Avatar>
+              <InfoIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={`${t("版本")}: ${
+              import.meta.env.VITE_VERSION || "unknown"
+            }${
+              import.meta.env.VITE_COMMIT_HASH
+                ? ` - ${import.meta.env.VITE_COMMIT_HASH}`
+                : ""
+            }`}
+            secondary={import.meta.env.VITE_COMMIT_MESSAGE || ""}
+          />
+        </ListItemButton>
         <ListItemButton
           onClick={() => {
             vibrate(vibrateDuration);
@@ -185,45 +278,10 @@ const Settings = () => {
             }
           />
         </ListItemButton>
-        <Divider />
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            if (geoPermission === "granted") {
-              updateGeoPermission("closed");
-            } else if (
-              geoPermission === "force-opening" ||
-              geoPermission === "opening"
-            ) {
-              updateGeoPermission("closed");
-            } else {
-              updateGeoPermission("force-opening", () => {
-                setShowGeoPermissionDenied(true);
-              });
-            }
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              {geoPermission === "granted" ? (
-                <LocationOnIcon />
-              ) : (
-                <LocationOffIcon />
-              )}
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("地理位置定位功能")}
-            secondary={t(
-              geoPermission === "granted"
-                ? "開啟"
-                : geoPermission === "opening" ||
-                    geoPermission === "force-opening"
-                  ? "開啟中..."
-                  : "關閉"
-            )}
-          />
-        </ListItemButton>
+
+        <ListSubheader sx={subheaderSx} disableSticky>
+          {t("能源效益")}
+        </ListSubheader>
         <ListItemButton
           onClick={() => {
             vibrate(vibrateDuration);
@@ -238,95 +296,154 @@ const Settings = () => {
             secondary={t(autoRenew ? "開啟" : "關閉")}
           />
         </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            setIsPersonalizeDialog(true);
-          }}
-        >
+        <Box sx={pairTightSx}>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              toggleEnergyMode();
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <MapIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("顯示地圖")}
+              secondary={t(!energyMode ? "開啟" : "關閉")}
+            />
+          </ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              if (geoPermission === "granted") {
+                updateGeoPermission("closed");
+              } else if (
+                geoPermission === "force-opening" ||
+                geoPermission === "opening"
+              ) {
+                updateGeoPermission("closed");
+              } else {
+                updateGeoPermission("force-opening", () => {
+                  setShowGeoPermissionDenied(true);
+                });
+              }
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                {geoPermission === "granted" ? (
+                  <LocationOnIcon />
+                ) : (
+                  <LocationOffIcon />
+                )}
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={t("定位功能")}
+              secondary={t(
+                geoPermission === "granted"
+                  ? "開啟"
+                  : geoOpening
+                    ? "開啟中..."
+                    : "關閉"
+              )}
+            />
+          </ListItemButton>
+        </Box>
+        <ListItem>
           <ListItemAvatar>
             <Avatar>
-              <InsertEmoticonIcon />
+              <HourglassTopIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText
-            primary={t("個性化設定")}
-            secondary={t("日夜模式、時間格式、路線次序等")}
-          />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            navigate(`/${language}/export`);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <SendToMobileIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("資料匯出")} />
-        </ListItemButton>
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            navigate(`/${language}/import`);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <SecurityUpdateIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("資料匯入")} />
-        </ListItemButton>
-        <Divider />
-        <ListItemButton
-          onClick={() => {
-            vibrate(vibrateDuration);
-            triggerShare(
-              `https://${window.location.hostname}`,
-              t("巴士到站預報 App")
-            ).then(() => {
-              if (navigator.clipboard) setIsCopied(true);
-            });
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <ShareIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={t("複製應用程式鏈結")}
-            secondary={t("經不同媒介分享給親友")}
-          />
-        </ListItemButton>
-        {
-          // @ts-expect-error harmonyBridger exists in Harmony OS only
-          typeof harmonyBridger === "undefined" && (
-            <ListItemButton
-              onClick={() => {
-                vibrate(vibrateDuration);
-                openUrl(
-                  isApple
-                    ? `https://watch.hkbus.app/`
-                    : `https://wear.hkbus.app/`
-                );
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <WatchIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={t("智能手錶應用程式")}
-                secondary={t("支援 WearOS 及 WatchOS 平台")}
+            primary={t("更新頻率")}
+            secondary={
+              <Slider
+                step={1}
+                min={5}
+                max={60}
+                value={refreshInterval / 1000}
+                valueLabelDisplay="auto"
+                size="small"
+                valueLabelFormat={(v: number) => `${v}s`}
+                onChange={(_, v: number | number[]) =>
+                  updateRefreshInterval((v as number) * 1000)
+                }
               />
-            </ListItemButton>
-          )
-        }
+            }
+          />
+        </ListItem>
+        <ListSubheader sx={subheaderSx} disableSticky>
+          {t("資料管理")}
+        </ListSubheader>
+        <Box sx={pairTightSx}>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              navigate(`/${language}/export`);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <SendToMobileIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={t("資料匯出")} />
+            <NavigateNextIcon sx={hintSx} />
+          </ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              vibrate(vibrateDuration);
+              navigate(`/${language}/import`);
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <SecurityUpdateIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={t("資料匯入")} />
+            <NavigateNextIcon sx={hintSx} />
+          </ListItemButton>
+        </Box>
+        <ListItemButton
+          onClick={() => {
+            vibrate(vibrateDuration);
+            setPersonalizeTab("manage");
+          }}
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <BookmarksIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={t("管理收藏")} />
+          <NavigateNextIcon sx={hintSx} />
+        </ListItemButton>
+        <ListItemButton
+          onClick={() => {
+            vibrate(vibrateDuration);
+            if (window.confirm(t("確定清空？"))) {
+              resetUsageRecord();
+            }
+          }}
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <DeleteIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={t("一鍵清空用戶資料")}
+            secondary={t("包括設定和收藏")}
+          />
+        </ListItemButton>
+
+        <ListSubheader sx={subheaderSx} disableSticky>
+          {t("社群")}
+        </ListSubheader>
         {!iOSRNWebView() ? (
           <ListItemButton
             onClick={() => {
@@ -343,6 +460,7 @@ const Settings = () => {
               primary={t("Telegram 交流區")}
               secondary={t("歡迎意見及技術交流")}
             />
+            <OpenInNewIcon fontSize="small" sx={hintSx} />
           </ListItemButton>
         ) : (
           <ListItemButton
@@ -360,19 +478,7 @@ const Settings = () => {
               primary={t("協助")}
               secondary={t("歡迎意見及技術交流")}
             />
-          </ListItemButton>
-        )}
-        {!iOSRNWebView() && (
-          <ListItemButton onClick={toggleAnalytics}>
-            <ListItemAvatar>
-              <Avatar>
-                <BarChartIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={"Google Analytics"}
-              secondary={t(analytics ? "開啟" : "關閉")}
-            />
+            <NavigateNextIcon sx={hintSx} />
           </ListItemButton>
         )}
         <ListItemButton
@@ -392,6 +498,7 @@ const Settings = () => {
             primary={t("統計數據彙整")}
             secondary={t("整理從 Google 收集的數據")}
           />
+          <OpenInNewIcon fontSize="small" sx={hintSx} />
         </ListItemButton>
         {
           // @ts-expect-error harmonyBridger exists in Harmony OS only
@@ -411,10 +518,62 @@ const Settings = () => {
                 primary={t("捐款支持")}
                 secondary={Donations[donationId].description[language]}
               />
+              <OpenInNewIcon fontSize="small" sx={hintSx} />
             </ListItemButton>
           )
         }
-        <Divider />
+
+        <ListSubheader sx={subheaderSx} disableSticky>
+          {t("私隱")}
+        </ListSubheader>
+        {!iOSRNWebView() && (
+          <ListItemButton onClick={toggleAnalytics}>
+            <ListItemAvatar>
+              <Avatar>
+                <BarChartIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={"Google Analytics"}
+              secondary={t(analytics ? "開啟" : "關閉")}
+            />
+          </ListItemButton>
+        )}
+        <ListItemButton
+          onClick={() => {
+            vibrate(vibrateDuration);
+            toggleIsRecentSearchShown();
+          }}
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <HistoryIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={t("搜尋記錄")}
+            secondary={t(isRecentSearchShown ? "開啟" : "關閉")}
+          />
+        </ListItemButton>
+        <ListItemButton
+          component={"a"}
+          href={`/${language}/privacy`}
+          onClick={() => {
+            vibrate(vibrateDuration);
+          }}
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <FingerprintIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={t("隱私權聲明")} />
+          <NavigateNextIcon sx={hintSx} />
+        </ListItemButton>
+
+        <ListSubheader sx={subheaderSx} disableSticky>
+          {t("關於")}
+        </ListSubheader>
         <ListItemButton
           onClick={() => {
             vibrate(vibrateDuration);
@@ -433,6 +592,7 @@ const Settings = () => {
             primary={t("Source code")}
             secondary={"GPL-3.0 License"}
           />
+          <OpenInNewIcon fontSize="small" sx={hintSx} />
         </ListItemButton>
         <ListItemButton
           onClick={() => {
@@ -447,8 +607,9 @@ const Settings = () => {
           </ListItemAvatar>
           <ListItemText
             primary={t("FAQ")}
-            secondary="Eng Version is currently not available"
+            secondary={"Eng Version is currently not available"}
           />
+          <OpenInNewIcon fontSize="small" sx={hintSx} />
         </ListItemButton>
         <ListItemButton
           onClick={() => {
@@ -459,7 +620,11 @@ const Settings = () => {
           <ListItemAvatar>
             <Avatar sx={iconSx} src="/img/logo128.png" alt="App Logo"></Avatar>
           </ListItemAvatar>
-          <ListItemText primary={t("圖標來源")} secondary={"陳瓜 Chan Gua"} />
+          <ListItemText
+            primary={t("圖標來源")}
+            secondary={t("陳瓜 Chan Gua")}
+          />
+          <OpenInNewIcon fontSize="small" sx={hintSx} />
         </ListItemButton>
         <ListItemButton
           onClick={() => {
@@ -476,20 +641,7 @@ const Settings = () => {
             primary={t("地圖資源")}
             secondary={"HK pmtiles Generation by @anscg"}
           />
-        </ListItemButton>
-        <ListItemButton
-          component={"a"}
-          href={`/${language}/privacy`}
-          onClick={() => {
-            vibrate(vibrateDuration);
-          }}
-        >
-          <ListItemAvatar>
-            <Avatar>
-              <FingerprintIcon />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={t("隱私權聲明")} />
+          <OpenInNewIcon fontSize="small" sx={hintSx} />
         </ListItemButton>
         <ListItemButton
           component={"a"}
@@ -504,18 +656,25 @@ const Settings = () => {
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary={t("條款")} />
+          <NavigateNextIcon sx={hintSx} />
         </ListItemButton>
-        <ListItem onClick={toggleDebug}>
+        <ListItemButton
+          onClick={() => {
+            vibrate(vibrateDuration);
+            openUrl("https://data.gov.hk");
+          }}
+        >
           <ListItemAvatar>
             <Avatar>
               <DataUsageIcon />
             </Avatar>
           </ListItemAvatar>
           <ListItemText
-            primary={t("交通資料來源") + ` ${debug === true ? "DEBUG" : ""}`}
-            secondary={t("開放數據平台") + "  https://data.gov.hk"}
+            primary={t("交通資料來源")}
+            secondary={t("開放數據平台")}
           />
-        </ListItem>
+          <OpenInNewIcon fontSize="small" sx={hintSx} />
+        </ListItemButton>
       </List>
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
@@ -545,8 +704,9 @@ const Settings = () => {
         handleClose={() => setIsOpenInstallDialog(false)}
       />
       <PersonalizeDialog
-        open={isPersonalizeDialog}
-        onClose={() => setIsPersonalizeDialog(false)}
+        open={personalizeTab !== null}
+        initialTab={personalizeTab ?? "function"}
+        onClose={() => setPersonalizeTab(null)}
       />
     </Paper>
   );
@@ -564,6 +724,45 @@ const rootSx: SxProps<Theme> = {
       theme.palette.mode === "dark"
         ? theme.palette.background.default
         : "white",
+  },
+};
+
+const subheaderSx: SxProps<Theme> = {
+  bgcolor: "transparent",
+  lineHeight: "36px",
+  fontWeight: 700,
+  fontSize: "0.75rem",
+  letterSpacing: "0.06em",
+  textTransform: "uppercase",
+  color: "primary.main",
+};
+
+const hintSx: SxProps<Theme> = {
+  color: "text.disabled",
+  ml: 1,
+};
+
+// a normal-case hint appended to a section header, same size as the title
+const sectionHintSx: SxProps<Theme> = {
+  ml: 1,
+  fontSize: "0.75rem",
+  fontWeight: 400,
+  color: "text.secondary",
+  textTransform: "none",
+  letterSpacing: "normal",
+};
+
+// pair short label-only rows side-by-side; wraps back to 1 column on the narrowest
+// screens (iPhone SE). used only where mis-click risk is low and labels are short:
+// map|location and export|import
+const pairTightSx: SxProps<Theme> = {
+  display: "flex",
+  flexWrap: "wrap",
+  "& > *": { flex: "1 1 150px", minWidth: 0 },
+  "& .MuiListItemText-secondary": {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 };
 
