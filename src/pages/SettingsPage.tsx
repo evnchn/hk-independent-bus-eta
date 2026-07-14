@@ -3,6 +3,7 @@ import AppContext from "../context/AppContext";
 import {
   Avatar,
   Box,
+  Checkbox,
   List,
   ListItem,
   ListItemButton,
@@ -295,6 +296,12 @@ const Settings = () => {
             primary={t("自動更新路線資料")}
             secondary={t(autoRenew ? "開啟" : "關閉")}
           />
+          <Checkbox
+            edge="end"
+            checked={autoRenew}
+            inputProps={{ tabIndex: -1, "aria-hidden": true, readOnly: true }}
+            sx={switchSx}
+          />
         </ListItemButton>
         <Box sx={pairTightSx}>
           <ListItemButton
@@ -311,6 +318,12 @@ const Settings = () => {
             <ListItemText
               primary={t("顯示地圖")}
               secondary={t(!energyMode ? "開啟" : "關閉")}
+            />
+            <Checkbox
+              edge="end"
+              checked={!energyMode}
+              inputProps={{ tabIndex: -1, "aria-hidden": true, readOnly: true }}
+              sx={switchSx}
             />
           </ListItemButton>
           <ListItemButton
@@ -348,6 +361,12 @@ const Settings = () => {
                     ? "開啟中..."
                     : "關閉"
               )}
+            />
+            <Checkbox
+              edge="end"
+              checked={geoPermission === "granted"}
+              inputProps={{ tabIndex: -1, "aria-hidden": true, readOnly: true }}
+              sx={switchSx}
             />
           </ListItemButton>
         </Box>
@@ -537,6 +556,12 @@ const Settings = () => {
               primary={"Google Analytics"}
               secondary={t(analytics ? "開啟" : "關閉")}
             />
+            <Checkbox
+              edge="end"
+              checked={analytics}
+              inputProps={{ tabIndex: -1, "aria-hidden": true, readOnly: true }}
+              sx={switchSx}
+            />
           </ListItemButton>
         )}
         <ListItemButton
@@ -553,6 +578,12 @@ const Settings = () => {
           <ListItemText
             primary={t("搜尋記錄")}
             secondary={t(isRecentSearchShown ? "開啟" : "關閉")}
+          />
+          <Checkbox
+            edge="end"
+            checked={isRecentSearchShown}
+            inputProps={{ tabIndex: -1, "aria-hidden": true, readOnly: true }}
+            sx={switchSx}
           />
         </ListItemButton>
         <ListItemButton
@@ -764,6 +795,11 @@ const pairTightSx: SxProps<Theme> = {
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
+};
+
+// visual-only indicator; the row's onClick performs the toggle
+const switchSx: SxProps<Theme> = {
+  pointerEvents: "none",
 };
 
 const iconSx: SxProps<Theme> = {
