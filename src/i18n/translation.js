@@ -64,6 +64,7 @@ const resources = {
       包括鎖定和常用報時: "Includes saved and commonly used ETA",
       交通資料來源: "ETA Data Source",
       開放數據平台: "DATA.GOV.HK",
+      預覽: "Preview",
       捐款支持: "Donate",
       複製應用程式鏈結: "Copy App URL",
       經不同媒介分享給親友: "Share it!",
