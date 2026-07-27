@@ -4,6 +4,7 @@ import {
   Star as StarIcon,
   StarBorderOutlined as StarOutlinedIcon,
 } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import CollectionContext from "../../CollectionContext";
 
 interface RouteStarButtonProps {
@@ -12,9 +13,11 @@ interface RouteStarButtonProps {
 
 const RouteStarButton = ({ routeId }: RouteStarButtonProps) => {
   const { savedEtas, setCollectionDrawerRoute } = useContext(CollectionContext);
+  const { t } = useTranslation();
 
   return (
     <IconButton
+      aria-label={t("收藏")}
       sx={buttonSx}
       size="small"
       onClick={() => {
