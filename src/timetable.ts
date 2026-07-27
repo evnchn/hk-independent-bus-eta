@@ -1,7 +1,7 @@
 import { EtaDb, Freq } from "hk-bus-eta";
 
 // return minute offset start from sunday 00:00
-const getWeeklyTimestamp = (day: number, dayTime: string): number => {
+export const getWeeklyTimestamp = (day: number, dayTime: string): number => {
   let ret = day * 24 * 60;
   ret +=
     parseInt(dayTime.slice(0, 2), 10) * 60 + parseInt(dayTime.slice(2), 10);
@@ -55,6 +55,7 @@ export const isRouteAvaliable = (
               idx,
               endTime ? endTime[0] : startTime
             );
+            if (time_b < time_a) time_b += 24 * 60;
             isAvailable =
               isAvailable || checkValueBetween(time_a, time_b, currentWts);
           });
