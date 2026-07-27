@@ -117,7 +117,6 @@ export const fetchDbFunc = async (
       }
     }
     const updateTime = Date.now() + "";
-    localStorage.setItem("updateTime", updateTime);
     return await new Promise((resolve_1, reject_1) => {
       const timerId = setTimeout(() => {
         if (!forceRenew) {
@@ -145,6 +144,7 @@ export const fetchDbFunc = async (
           updateTime: parseInt(updateTime),
         }))
         .then((ret) => {
+          localStorage.setItem("updateTime", updateTime);
           localStorage.setItem("schemaVersion", _schemaVersion);
           localStorage.setItem("versionMd5", _md5);
           clearTimeout(timerId);
