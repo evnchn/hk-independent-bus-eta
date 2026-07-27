@@ -10,7 +10,7 @@ import {
 import { useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import RouteOffiicalUrlBtn from "../timetableDrawer/RouteOfficialUrlBtn";
-import { isHoliday } from "../../../timetable";
+import { getWeeklyTimestamp, isHoliday } from "../../../timetable";
 import DbContext from "../../../context/DbContext";
 
 interface TimeTableProps {
@@ -184,9 +184,15 @@ const isCurrentTimeslot = (
 ): boolean => {
   if (!isMatchServiceId(serviceId, isHoliday)) return false;
   const date = new Date();
-  const ts = `${date.getHours().toString().padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}`;
+  let ts = date.getHours() * 60 + date.getMinutes();
   if (details) {
-    return start <= ts && ts <= details[0];
+    const time_a = getWeeklyTimestamp(0, start);
+    let time_b = getWeeklyTimestamp(0, details[0]);
+    if (time_b < time_a) time_b += 24 * 60;
+    if (ts < time_a && ServiceMaps[serviceId]?.[(date.getDay() + 6) % 7]) {
+      ts += 24 * 60;
+    }
+    return time_a <= ts && ts <= time_b;
   }
   return false;
 };
