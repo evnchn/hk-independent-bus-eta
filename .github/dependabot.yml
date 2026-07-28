@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # npm — bug fixes only. Split prod/dev so a bad bump is isolated, not bundled.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      production:
+        dependency-type: production
+        update-types: ["minor", "patch"]
+      development:
+        dependency-type: development
+        update-types: ["minor", "patch"]
+    ignore:
+      # Majors are breaking changes / feature churn, not fixes.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # prettier minors reformat the whole tree — huge diff, fights prettify.yml.
+      - dependency-name: prettier
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+    groups:
+      actions:
+        patterns: ["*"]
