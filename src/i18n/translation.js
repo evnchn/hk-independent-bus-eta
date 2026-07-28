@@ -86,6 +86,7 @@ const resources = {
       "安裝巴士預報 App 到裝置": "Install HK BUS ETA",
       安裝步驟: "Installation Steps",
       外觀: "Appearance",
+      動畫效果: "Animations",
       字體大小: "Font Size",
       管理收藏: "Manage Collections",
       "未有收藏。": "No collections.",
