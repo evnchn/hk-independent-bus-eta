@@ -1,7 +1,7 @@
 import React, { MouseEventHandler } from "react";
 import {
+  Box,
   Card,
-  CardActionArea,
   CardContent,
   IconButton,
   SxProps,
@@ -46,12 +46,18 @@ const RouteRow = ({ route, onClick, style, onRemove }: RouteRowProps) => {
       aria-hidden="true"
     >
       <Card variant="outlined" key={route[0]} square sx={rootSx}>
-        <CardActionArea onClick={onClick} aria-label={routeLabel}>
+        <Box
+          component="button"
+          type="button"
+          onClick={onClick}
+          aria-label={routeLabel}
+          sx={actionSx}
+        >
           <CardContent sx={cardContentSx}>
             <RouteNoCompany route={route} />
             <RouteTerminus terminus={route[1]} />
           </CardContent>
-        </CardActionArea>
+        </Box>
         {onRemove && (
           <IconButton onClick={onRemove} aria-label={`${t("移除")} ${routeNo}`}>
             <CloseIcon />
@@ -80,4 +86,37 @@ const cardContentSx: SxProps<Theme> = {
   py: 0.5,
   px: 2,
   alignItems: "center",
+};
+
+// A lightweight native <button> replaces MUI CardActionArea (a ButtonBase) as
+// the row's click target — the ButtonBase is ~a quarter of the per-row render
+// cost, which shows up as jank when react-window mounts rows during a scroll.
+// Keeps the accessible name + keyboard activation; a CSS press/focus state
+// stands in for the ripple.
+const actionSx: SxProps<Theme> = {
+  appearance: "none",
+  border: 0,
+  m: 0,
+  p: 0,
+  width: "100%",
+  background: "transparent",
+  font: "inherit",
+  color: "inherit",
+  textAlign: "left",
+  display: "block",
+  cursor: "pointer",
+  transition: "background-color 0.1s ease-out",
+  "&:active": {
+    backgroundColor: (theme) =>
+      theme.palette.mode === "dark"
+        ? "rgba(255, 255, 255, 0.08)"
+        : "rgba(0, 0, 0, 0.06)",
+  },
+  "&:focus-visible": {
+    outline: (theme) => `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: "-2px",
+  },
+  "@media (prefers-reduced-motion: reduce)": {
+    transition: "none",
+  },
 };
