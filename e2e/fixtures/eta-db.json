@@ -1,0 +1,280 @@
+{
+  "holidays": ["20250101", "20250129"],
+  "routeList": {
+    "1A+1+SAU MAU PING (CENTRAL)+STAR FERRY": {
+      "bound": {
+        "kmb": "O"
+      },
+      "co": ["kmb"],
+      "dest": {
+        "en": "STAR FERRY",
+        "zh": "尖沙咀碼頭"
+      },
+      "fares": null,
+      "faresHoliday": null,
+      "freq": null,
+      "gtfsId": "1053",
+      "jt": "60",
+      "nlbId": null,
+      "orig": {
+        "en": "SAU MAU PING (CENTRAL)",
+        "zh": "中秀茂坪"
+      },
+      "route": "1A",
+      "seq": 34,
+      "serviceType": "1",
+      "stops": {
+        "kmb": [
+          "A3ADFCDF8487ADB9",
+          "6F106FD26B684372",
+          "26305AF62FBEE2BC",
+          "A8CE52F4450FE939",
+          "41E81A921D79F375",
+          "04B6438688E12AC0"
+        ]
+      }
+    },
+    "1A+1+STAR FERRY+SAU MAU PING (CENTRAL)": {
+      "bound": {
+        "kmb": "I"
+      },
+      "co": ["kmb"],
+      "dest": {
+        "en": "SAU MAU PING (CENTRAL)",
+        "zh": "中秀茂坪"
+      },
+      "fares": null,
+      "faresHoliday": null,
+      "freq": null,
+      "gtfsId": "1053",
+      "jt": "60",
+      "nlbId": null,
+      "orig": {
+        "en": "STAR FERRY",
+        "zh": "尖沙咀碼頭"
+      },
+      "route": "1A",
+      "seq": 34,
+      "serviceType": "1",
+      "stops": {
+        "kmb": [
+          "8D804CFD9C7B9042",
+          "AB057A63C24E990E",
+          "2946BA6CACA326DF",
+          "6C34AE386C779E0B",
+          "3C9C928E1674AB98",
+          "775FC7E2B86C4E3F"
+        ]
+      }
+    }
+  },
+  "serviceDayMap": {},
+  "stopList": {
+    "04B6438688E12AC0": {
+      "location": {
+        "lat": 22.3198,
+        "lng": 114.22741
+      },
+      "name": {
+        "en": "CHEUNG WO COURT (KT533)",
+        "zh": "祥和苑 (KT533)"
+      }
+    },
+    "26305AF62FBEE2BC": {
+      "location": {
+        "lat": 22.31509,
+        "lng": 114.23463
+      },
+      "name": {
+        "en": "SAU MING HOUSE (KT393)",
+        "zh": "秀明樓 (KT393)"
+      }
+    },
+    "2946BA6CACA326DF": {
+      "location": {
+        "lat": 22.30002,
+        "lng": 114.1719
+      },
+      "name": {
+        "en": "KIMBERLEY ROAD (YT111)",
+        "zh": "金巴利道 (YT111)"
+      }
+    },
+    "3C9C928E1674AB98": {
+      "location": {
+        "lat": 22.3093,
+        "lng": 114.17114
+      },
+      "name": {
+        "en": "KOWLOON CENTRAL POST OFFICE (YT135)",
+        "zh": "九龍中央郵政局 (YT135)"
+      }
+    },
+    "41E81A921D79F375": {
+      "location": {
+        "lat": 22.31871,
+        "lng": 114.22984
+      },
+      "name": {
+        "en": "HIU LAI COURT (KT513)",
+        "zh": "曉麗苑 (KT513)"
+      }
+    },
+    "6C34AE386C779E0B": {
+      "location": {
+        "lat": 22.30469,
+        "lng": 114.17159
+      },
+      "name": {
+        "en": "BOWRING STREET, PRUDENTIAL CENTRE (YT121)",
+        "zh": "寶靈街,恆豐中心 (YT121)"
+      }
+    },
+    "6F106FD26B684372": {
+      "location": {
+        "lat": 22.31674,
+        "lng": 114.23335
+      },
+      "name": {
+        "en": "SAU ON HOUSE (KT390)",
+        "zh": "秀安樓 (KT390)"
+      }
+    },
+    "775FC7E2B86C4E3F": {
+      "location": {
+        "lat": 22.31107,
+        "lng": 114.17086
+      },
+      "name": {
+        "en": "MAN MING LANE YAU MA TEI (YT139)",
+        "zh": "油麻地文明里 (YT139)"
+      }
+    },
+    "8D804CFD9C7B9042": {
+      "location": {
+        "lat": 22.29432,
+        "lng": 114.16919
+      },
+      "name": {
+        "en": "STAR FERRY, HARBOUR CITY (YT915)",
+        "zh": "尖沙咀碼頭,海港城 (YT915)"
+      }
+    },
+    "A3ADFCDF8487ADB9": {
+      "location": {
+        "lat": 22.31886,
+        "lng": 114.23135
+      },
+      "name": {
+        "en": "SAU MAU PING (CENTRAL) (KT975)",
+        "zh": "中秀茂坪 (KT975)"
+      }
+    },
+    "A8CE52F4450FE939": {
+      "location": {
+        "lat": 22.31555,
+        "lng": 114.23291
+      },
+      "name": {
+        "en": "LEUNG SHEK CHEE COLLEGE (KT512)",
+        "zh": "梁式芝書院 (KT512)"
+      }
+    },
+    "AB057A63C24E990E": {
+      "location": {
+        "lat": 22.29605,
+        "lng": 114.17217
+      },
+      "name": {
+        "en": "TSIM SHA TSUI BBI - MIDDLE ROAD (YT102)",
+        "zh": "尖沙咀轉車站 - 中間道 (YT102)"
+      }
+    }
+  },
+  "stopMap": {
+    "04B6438688E12AC0": [
+      ["ctb", "003039"],
+      ["gmb", "20015580"]
+    ],
+    "26305AF62FBEE2BC": [["kmb", "A971B9FF20627145"]],
+    "2946BA6CACA326DF": [
+      ["ctb", "001543"],
+      ["kmb", "EA4A3876639F21B4"]
+    ],
+    "3C9C928E1674AB98": [
+      ["kmb", "2DB47A3C263E4F5C"],
+      ["kmb", "3B672FFFDB172686"],
+      ["kmb", "5EEFE2E2583B576B"],
+      ["kmb", "B046BFB6CCD3E7CE"],
+      ["kmb", "D7C7D86E923EEAE1"],
+      ["kmb", "D9F1ED8B7D7C5AAD"],
+      ["kmb", "FABC0445FC1C04D7"],
+      ["kmb", "FFB7857BB362057D"],
+      ["ctb", "001817"]
+    ],
+    "41E81A921D79F375": [
+      ["ctb", "003038"],
+      ["gmb", "20015087"],
+      ["gmb", "20015579"]
+    ],
+    "6C34AE386C779E0B": [
+      ["ctb", "001545"],
+      ["kmb", "20D0C9CBE2BC9451"],
+      ["kmb", "B0F64FFFBECE8AA4"],
+      ["mtr", "JOR"],
+      ["kmb", "36DD78B37B828DD8"],
+      ["ctb", "003151"],
+      ["kmb", "100FBBA946264714"],
+      ["kmb", "357B7D41501CDACA"],
+      ["kmb", "53E802F94BDF5048"],
+      ["kmb", "EC07D92834F5430B"]
+    ],
+    "6F106FD26B684372": [
+      ["ctb", "001747"],
+      ["kmb", "1C111CE3CE325C6A"],
+      ["gmb", "20021318"],
+      ["gmb", "20014150"]
+    ],
+    "775FC7E2B86C4E3F": [
+      ["ctb", "001547"],
+      ["ctb", "003152"],
+      ["kmb", "088B858E4B54D8AC"],
+      ["gmb", "20013201"],
+      ["kmb", "A93947027435EBAD"],
+      ["kmb", "BBE77B90CE43AEFA"],
+      ["kmb", "E50D6F218BC33CD0"],
+      ["kmb", "038F62C619BF8650"],
+      ["kmb", "A8E63F70F386C05A"]
+    ],
+    "8D804CFD9C7B9042": [
+      ["ctb", "001588"],
+      ["kmb", "25BD7B50919AA221"],
+      ["kmb", "4D5FBE4639E869E3"],
+      ["kmb", "5E2EC7476D55E0BA"],
+      ["kmb", "77BEA79A5FF7A21A"],
+      ["kmb", "96363F113F394E8A"],
+      ["kmb", "C88E34E485B43EFB"]
+    ],
+    "A3ADFCDF8487ADB9": [
+      ["ctb", "001746"],
+      ["gmb", "20007401"],
+      ["kmb", "265133DD348D564C"],
+      ["kmb", "6BBF595BBAD1DB2E"],
+      ["kmb", "3216F11DA45B80D7"],
+      ["gmb", "20014148"],
+      ["kmb", "F4D6C8BE3A3DADDD"]
+    ],
+    "A8CE52F4450FE939": [
+      ["ctb", "003037"],
+      ["gmb", "20015085"],
+      ["gmb", "20015577"],
+      ["kmb", "28A55D04DC72B1EA"]
+    ],
+    "AB057A63C24E990E": [
+      ["ctb", "001541"],
+      ["kmb", "1F2E60EDB4254D30"],
+      ["ctb", "003148"],
+      ["kmb", "940A31DA2A6051A9"]
+    ]
+  }
+}
