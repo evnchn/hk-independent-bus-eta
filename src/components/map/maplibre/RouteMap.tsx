@@ -285,7 +285,11 @@ const RouteMap = ({
         <CompassControl />
       </BaseMap>
       {isApproximate && (
-        <Typography variant="caption" sx={approxSx} data-testid="route-path-approximate">
+        <Typography
+          variant="caption"
+          sx={approxSx}
+          data-testid="route-path-approximate"
+        >
           {t("route-path-approximate-text")}
         </Typography>
       )}
