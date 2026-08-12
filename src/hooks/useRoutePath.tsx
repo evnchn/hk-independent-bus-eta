@@ -14,6 +14,7 @@ interface GeoJsonType extends GeoJSON.GeoJsonObject {
 
 export const useRoutePath = (routeId: string, stops: StopListEntry[]) => {
   const [geoJson, setGeoJson] = useState<GeoJsonType | null>(null);
+  const [isApproximate, setIsApproximate] = useState(false);
   const {
     db: { routeList },
   } = useContext(DbContext);
@@ -32,6 +33,7 @@ export const useRoutePath = (routeId: string, stops: StopListEntry[]) => {
       waypointsFile = `${route}${dest.en.includes("Circular") ? "" : bound[co[0]] === "I" ? "_I" : "_O"}.json`;
     }
     const setFallbackGeoJson = () => {
+      setIsApproximate(true);
       setGeoJson({
         features: [
           {
@@ -57,6 +59,7 @@ export const useRoutePath = (routeId: string, stops: StopListEntry[]) => {
       fetch(`https://hkbus.github.io/route-waypoints/${waypointsFile}`)
         .then((r) => r.json())
         .then((json) => {
+          setIsApproximate(false);
           setGeoJson(json);
         })
         .catch(() => {
@@ -65,8 +68,9 @@ export const useRoutePath = (routeId: string, stops: StopListEntry[]) => {
     }
     return () => {
       setGeoJson(null);
+      setIsApproximate(false);
     };
   }, [routeId, gtfsId, bound, co, stops, dest, route]);
 
-  return geoJson;
+  return { geoJson, isApproximate };
 };

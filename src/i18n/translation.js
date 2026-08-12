@@ -4,6 +4,8 @@ const resources = {
       "bad-weather-text":
         "Services may be impacted by bad weather. Data displayed below might not be accurate. Check here for official announcements.",
       "bad-weather-link": "https://www.td.gov.hk/en/special_news/spnews.htm",
+      "route-path-approximate-text":
+        "Approximate route shape — drawn straight between stops",
       "db-renew-text": "Tap to fetch revised route info",
       "巴士到站預報 App （免費無廣告）": "HK Bus ETA App (Free and Ad-free)",
       "巴士到站預報 App": "HK Bus ETA App",
@@ -220,6 +222,7 @@ const resources = {
       "bad-weather-text":
         "公共交通及班次或受惡劣天氣影響，以下資料未必反映最新狀況。按此查看官方公佈。",
       "bad-weather-link": "https://www.td.gov.hk/tc/special_news/spnews.htm",
+      "route-path-approximate-text": "路線走向未確認，圖中以車站直線連接",
       "db-renew-text": "路線資料已作修訂，請按此處更新",
       kmb: "九巴",
       ctb: "城巴",

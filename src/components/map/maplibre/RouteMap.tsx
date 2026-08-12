@@ -8,7 +8,8 @@ import {
 } from "react";
 import { Marker, Source, Layer } from "react-map-gl/maplibre";
 import type { FeatureCollection } from "geojson";
-import { Box, type SxProps, type Theme } from "@mui/material";
+import { Box, Typography, type SxProps, type Theme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import type { Company, StopListEntry } from "hk-bus-eta";
 import type { Location as GeoLocation } from "hk-bus-eta";
 import AppContext from "../../../context/AppContext";
@@ -73,11 +74,12 @@ const RouteMap = ({
     db: { stopList },
   } = useContext(DbContext);
   const language = useLanguage();
+  const { t } = useTranslation();
   const stops = useMemo(
     () => stopIds.map((sid) => stopList[sid]),
     [stopList, stopIds]
   );
-  const routePath = useRoutePath(routeId, stops);
+  const { geoJson: routePath, isApproximate } = useRoutePath(routeId, stops);
 
   const mapRef = useRef<RouteMapRef>({
     initialCenter: stops[stopIdx] ? stops[stopIdx].location : checkPosition(),
@@ -282,6 +284,11 @@ const RouteMap = ({
         <CenterControl onClick={onClickJumpToMyLocation} />
         <CompassControl />
       </BaseMap>
+      {isApproximate && (
+        <Typography variant="caption" sx={approxSx} data-testid="route-path-approximate">
+          {t("route-path-approximate-text")}
+        </Typography>
+      )}
     </Box>
   );
 };
@@ -445,7 +452,21 @@ const classes = {
 // Descendant selectors below match marker DOM nodes because
 // `<Marker>` mounts its children inside the map container, which is
 // itself inside this Box.
+const approxSx: SxProps<Theme> = {
+  position: "absolute",
+  top: 4,
+  left: 43,
+  right: 4,
+  zIndex: 1,
+  px: 0.75,
+  py: 0.25,
+  borderRadius: 1,
+  bgcolor: "rgba(0, 0, 0, 0.6)",
+  color: "#ffffff",
+};
+
 const rootSx: SxProps<Theme> = {
+  position: "relative",
   height: "35vh",
   filter: (theme) =>
     theme.palette.mode === "dark" ? "brightness(0.8)" : "none",
