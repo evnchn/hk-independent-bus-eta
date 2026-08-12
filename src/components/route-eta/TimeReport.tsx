@@ -107,7 +107,9 @@ const TimeReport = ({
           />
         ))}
       {etas.hasError && etas.some((e) => e.eta || e.remark?.[language]) && (
-        <Typography variant="caption">{t("部分班次資料無法載入")}</Typography>
+        <Typography variant="caption" display="block">
+          {t("部分班次資料無法載入")}
+        </Typography>
       )}
     </Box>
   );
