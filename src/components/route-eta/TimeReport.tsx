@@ -106,7 +106,7 @@ const TimeReport = ({
             route={route}
           />
         ))}
-      {etas.hasError && etas.length > 0 && etas.every((e) => e.eta) && (
+      {etas.hasError && etas.some((e) => e.eta || e.remark?.[language]) && (
         <Typography variant="caption">{t("部分班次資料無法載入")}</Typography>
       )}
     </Box>
