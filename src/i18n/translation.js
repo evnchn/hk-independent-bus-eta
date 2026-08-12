@@ -44,6 +44,8 @@ const resources = {
       鏈結已複製到剪貼簿: "Link copied to clipboard",
       資料更新中: "Data updating",
       未有班次資料: "No information is available",
+      無法載入班次資料: "Couldn't load arrival times",
+      部分班次資料無法載入: "Some arrival times couldn't be loaded",
       版本: "Version",
       更新路線資料庫: "Update Route Database",
       更新時間: "Last updated",

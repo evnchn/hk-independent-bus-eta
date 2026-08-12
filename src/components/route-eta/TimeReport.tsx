@@ -70,7 +70,7 @@ const TimeReport = ({
     ) {
       return etas[0].remark[language];
     } else if (etas.length === 0 || etas.every((e) => !e.eta)) {
-      return t("未有班次資料");
+      return t(etas.hasError ? "無法載入班次資料" : "未有班次資料");
     }
     return null;
   }, [etas, co, stops, stopId, t, language]);
@@ -106,6 +106,9 @@ const TimeReport = ({
             route={route}
           />
         ))}
+      {etas.hasError && etas.length > 0 && etas.every((e) => e.eta) && (
+        <Typography variant="caption">{t("部分班次資料無法載入")}</Typography>
+      )}
     </Box>
   );
 };
