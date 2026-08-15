@@ -27,7 +27,15 @@ export default defineConfig(({mode}: ConfigEnv) => {
       // strictPort: true,
     },
     build: {
-      outDir: "./build"
+      outDir: "./build",
+      rollupOptions: {
+        output: {
+          // Splitting the overlays out of the App chunk leaves rollup emitting a
+          // tail of sub-1KB shared chunks (one 111-byte chunk gzips LARGER than
+          // it is raw). Coalesce them back into their importers.
+          experimentalMinChunkSize: 4000,
+        },
+      },
     }
   }
 });
