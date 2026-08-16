@@ -82,7 +82,6 @@ const TimeTable = ({ routeId }: TimeTableProps) => {
 
 export default TimeTable;
 
-
 const ServiceMaps: Record<
   string,
   [boolean, boolean, boolean, boolean, boolean, boolean, boolean]
