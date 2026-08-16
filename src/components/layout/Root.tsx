@@ -11,11 +11,13 @@ import { Outlet } from "react-router-dom";
 import Footer from "./Footer";
 import Header from "./Header";
 import GACookieConsent from "./GACookieConsent";
-import CollectionDrawer from "./CollectionDrawer";
-import CollectionDialog from "./collections/CollectionDialog";
+import {
+  CollectionDrawerGate,
+  CollectionDialogGate,
+  PinDialogGate,
+} from "./LazyOverlays";
 import { Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import PinDialog from "./PinDialog";
 
 const Root = () => {
   const {
@@ -43,9 +45,9 @@ const Root = () => {
         </Box>
       </Suspense>
       <Footer />
-      <CollectionDrawer />
-      <CollectionDialog />
-      <PinDialog />
+      <CollectionDrawerGate />
+      <CollectionDialogGate />
+      <PinDialogGate />
     </Container>
   );
 };
