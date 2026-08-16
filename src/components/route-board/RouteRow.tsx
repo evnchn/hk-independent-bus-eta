@@ -86,13 +86,17 @@ const cardContentSx: SxProps<Theme> = {
   py: 0.5,
   px: 2,
   alignItems: "center",
+  // ButtonBase used to render trailing ripple/focus spans, so CardContent was
+  // never :last-child and MUI's 24px bottom padding never applied. Keep it off.
+  "&:last-child": { pb: 0.5 },
 };
 
 // A lightweight native <button> replaces MUI CardActionArea (a ButtonBase) as
 // the row's click target — the ButtonBase is ~a quarter of the per-row render
 // cost, which shows up as jank when react-window mounts rows during a scroll.
 // Keeps the accessible name + keyboard activation; a CSS press/focus state
-// stands in for the ripple.
+// stands in for the ripple. The font is deliberately NOT reset: ButtonBase does
+// not reset it either, so inheriting here would change how the row renders.
 const actionSx: SxProps<Theme> = {
   appearance: "none",
   border: 0,
@@ -100,9 +104,8 @@ const actionSx: SxProps<Theme> = {
   p: 0,
   width: "100%",
   background: "transparent",
-  font: "inherit",
   color: "inherit",
-  textAlign: "left",
+  textAlign: "inherit",
   display: "block",
   cursor: "pointer",
   transition: "background-color 0.1s ease-out",
