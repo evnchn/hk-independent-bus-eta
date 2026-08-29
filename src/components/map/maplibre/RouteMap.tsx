@@ -22,6 +22,7 @@ import MtrExits from "./MtrExits";
 import CompassControl from "./CompassControl";
 import CenterControl from "./CenterControl";
 import { useImperativeMap } from "./useImperativeMap";
+import SunStrip from "./SunStrip";
 
 interface RouteMapProps {
   routeId: string;
@@ -185,6 +186,12 @@ const RouteMap = ({
 
   return (
     <Box id="route-map" sx={rootSx}>
+      <SunStrip
+        routePath={routePath}
+        side="left"
+        stops={stops}
+        fromStopIdx={stopIdx}
+      />
       <BaseMap
         initialViewState={{
           longitude: mapRef.current.initialCenter.lng,
@@ -198,7 +205,7 @@ const RouteMap = ({
         // `cooperativeGestures` instead.
         onDragStart={handleDragStartOrEnd}
         onDragEnd={handleDragStartOrEnd}
-        style={{ height: "35vh" }}
+        style={{ height: "35vh", flex: 1, minWidth: 0 }}
       >
         <MapEffects pending={pendingNav} onApplied={handleNavApplied} />
 
@@ -282,6 +289,12 @@ const RouteMap = ({
         <CenterControl onClick={onClickJumpToMyLocation} />
         <CompassControl />
       </BaseMap>
+      <SunStrip
+        routePath={routePath}
+        side="right"
+        stops={stops}
+        fromStopIdx={stopIdx}
+      />
     </Box>
   );
 };
@@ -446,34 +459,35 @@ const classes = {
 // `<Marker>` mounts its children inside the map container, which is
 // itself inside this Box.
 const rootSx: SxProps<Theme> = {
+  display: "flex",
   height: "35vh",
-  filter: (theme) =>
-    theme.palette.mode === "dark" ? "brightness(0.8)" : "none",
   // Two layers of explicit 35vh (on the Box and on the inner map
   // container) keeps the map sized correctly even under flex parents.
   "& .maplibregl-map": {
     height: "35vh",
+    filter: (theme: Theme) =>
+      theme.palette.mode === "dark" ? "brightness(0.8)" : "none",
   },
   [`& .${classes.mtrMarker}`]: {
-    backgroundImage: `url(/img/mtr.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/mtr.svg)`,
   },
   [`& .${classes.gmbMarker}`]: {
-    backgroundImage: `url(/img/minibus.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/minibus.svg)`,
   },
   [`& .${classes.ctbMarker}`]: {
-    backgroundImage: `url(/img/bus_ctb.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/bus_ctb.svg)`,
   },
   [`& .${classes.jointlyMarker}`]: {
-    backgroundImage: `url(/img/bus_jointly.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/bus_jointly.svg)`,
   },
   [`& .${classes.lrtfeederMarker}`]: {
-    backgroundImage: `url(/img/bus_lrtfeeder.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/bus_lrtfeeder.svg)`,
   },
   [`& .${classes.nlbMarker}`]: {
-    backgroundImage: `url(/img/bus_nlb.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/bus_nlb.svg)`,
   },
   [`& .${classes.kmbMarker}`]: {
-    backgroundImage: `url(/img/bus_kmb.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/bus_kmb.svg)`,
   },
   [`& .${classes.active}`]: {
     animation: "blinker 1.5s infinite",
@@ -482,7 +496,7 @@ const rootSx: SxProps<Theme> = {
     filter: "grayscale(100%)",
   },
   [`& .self-center`]: {
-    backgroundImage: "url(/img/self.svg)",
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/self.svg)`,
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
@@ -490,7 +504,7 @@ const rootSx: SxProps<Theme> = {
     transformOrigin: "center",
   },
   ["& .mtr-exit"]: {
-    backgroundImage: `url(/img/HK_MTR_logo.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/HK_MTR_logo.svg)`,
   },
   ["& .mtr-exit-label"]: {
     background: "transparent",
@@ -498,7 +512,7 @@ const rootSx: SxProps<Theme> = {
     fontWeight: 600,
   },
   ["& .mtr-exit-barrier-free"]: {
-    backgroundImage: `url(/img/Wheelchair_symbol.svg)`,
+    backgroundImage: `url(${import.meta.env.BASE_URL}img/Wheelchair_symbol.svg)`,
     backgroundSize: "12px 11px",
   },
 };
