@@ -11,6 +11,7 @@ import { useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import RouteOffiicalUrlBtn from "../timetableDrawer/RouteOfficialUrlBtn";
 import { isHoliday } from "../../../timetable";
+import { ServiceIds } from "../../../serviceIds";
 import DbContext from "../../../context/DbContext";
 
 interface TimeTableProps {
@@ -80,37 +81,6 @@ const TimeTable = ({ routeId }: TimeTableProps) => {
 };
 
 export default TimeTable;
-
-export const ServiceIds: Record<string, string> = {
-  31: "星期一至五",
-  287: "星期一至五",
-  415: "星期一至五",
-  63: "星期一至六",
-  319: "星期一至六",
-  447: "星期一至六",
-  416: "星期六至日",
-  480: "星期六至日",
-  266: "星期二至四",
-  271: "星期一至四",
-  272: "星期五",
-  288: "星期六",
-  320: "星期日及公眾假期",
-  448: "星期日及公眾假期",
-  511: "所有日子",
-  111: "除星期三外",
-  1: "星期一",
-  2: "星期二",
-  4: "星期三",
-  8: "星期四",
-  16: "星期五",
-  32: "星期六",
-  64: "星期日",
-  257: "星期一",
-  258: "星期二",
-  260: "星期三",
-  264: "星期四",
-  999: "未知日子",
-};
 
 const ServiceMaps: Record<
   string,

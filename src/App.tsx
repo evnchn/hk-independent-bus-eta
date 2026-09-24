@@ -21,10 +21,10 @@ import Root from "./components/layout/Root";
 import RedirectPage from "./pages/RedirectPagePage";
 import reportWebVitals, { sendToGoogleAnalytics } from "./reportWebVitals";
 import useLanguage from "./hooks/useTranslation";
-import StopEtaListPage from "./pages/StopEtaListPage";
 
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const RouteEtaPage = React.lazy(() => import("./pages/RouteEtaPage"));
+const StopEtaListPage = React.lazy(() => import("./pages/StopEtaListPage"));
 const BookmarkedStopPage = React.lazy(
   () => import("./pages/BookmarkedStopPage")
 );
