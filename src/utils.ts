@@ -426,10 +426,11 @@ export const toProperCase = (txt: string) =>
   /\p{Script=Han}/u.test(txt)
     ? txt
     : txt.replace(
-        /(^|[^\p{L}\p{N}])([A-Z]{2,}(?:'[A-Z]+)?)(?![\p{L}\p{N}])/gu,
-        (_, pre, word) =>
+        /(^|[^\p{L}\p{N}])([A-Z]{2,})((?:['’][A-Z]+)?)(?![\p{L}\p{N}])/gu,
+        (_, pre, word, suffix) =>
           pre +
-          (ACRONYMS.has(word) ? word : word[0] + word.slice(1).toLowerCase())
+          (ACRONYMS.has(word) ? word : word[0] + word.slice(1).toLowerCase()) +
+          suffix.toLowerCase()
       );
 
 export const isEmptyObj = (obj: unknown) => {
