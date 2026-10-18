@@ -416,22 +416,15 @@ export const setSeoRouteFeature = ({
   }
 };
 
-const ACRONYMS = new Set(
-  "BBI CLP EMSD GMB HACTL HK HKBU HKCEC HKU HKUST HQ HSBC HZMB IFC II III IV KMB LOHAS LR LRT MTR PTI SKH TKO TVB YMCA YOHO YWCA".split(
-    " "
-  )
-);
-
 export const toProperCase = (txt: string) =>
-  /\p{Script=Han}/u.test(txt)
-    ? txt
-    : txt.replace(
-        /(^|[^\p{L}\p{N}])([A-Z]{2,})((?:['’][A-Z]+)?)(?![\p{L}\p{N}])/gu,
-        (_, pre, word, suffix) =>
-          pre +
-          (ACRONYMS.has(word) ? word : word[0] + word.slice(1).toLowerCase()) +
-          suffix.toLowerCase()
-      );
+  txt.replace(
+    /(^|[^\p{L}\p{N}])([A-Z]{2,}(?:'[A-Z]+)?)(?![\p{L}\p{N}])/gu,
+    (_, pre, word) =>
+      pre +
+      (["BBI", "MTR"].includes(word)
+        ? word
+        : word[0] + word.slice(1).toLowerCase())
+  );
 
 export const isEmptyObj = (obj: unknown) => {
   return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
