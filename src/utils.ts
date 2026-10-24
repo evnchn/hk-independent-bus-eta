@@ -10,7 +10,7 @@ import type { Location as GeoLocation } from "hk-bus-eta";
 import type { TransportType } from "./@types/types";
 import { isRouteAvaliable } from "./timetable";
 import { TFunction } from "i18next";
-import { ServiceIds } from "./components/route-eta/timetableDrawer/TimeTable";
+import { ServiceIds } from "./serviceIds";
 
 export const getDistance = (a: GeoLocation, b: GeoLocation) => {
   const R = 6371e3; // metres
