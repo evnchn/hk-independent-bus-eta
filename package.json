@@ -14,6 +14,7 @@
     "docker": "cd docker && docker-compose up -d --build",
     "docker:build": "docker build . --pull --build-arg $(sed 's:#.*$::g' docker/.env | sed '/^\\s*$/d' | sed ':a;N;$!ba;s/\\n/ --build-arg /g')",
     "docker:build-noenv": "docker build . --pull --build-arg $(sed 's:#.*$::g' .env | sed '/^\\s*$/d' | sed ':a;N;$!ba;s/\\n/ --build-arg /g')",
+    "test:e2e": "playwright test",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -58,6 +59,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
     "@tauri-apps/cli": "^2.1.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "13.3.0",
