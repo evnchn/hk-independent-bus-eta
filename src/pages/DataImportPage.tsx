@@ -136,6 +136,7 @@ const DataImport = () => {
       fontSize: obj.fontSize ?? 16,
       searchRange: obj.searchRange ?? DEFAULT_SEARCH_RANGE,
       isSearching: obj.isSearching ?? false,
+      reduceMotion: obj.reduceMotion ?? false,
     });
 
     navigate("/");
