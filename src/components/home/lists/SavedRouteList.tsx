@@ -11,6 +11,10 @@ import {
 
 // Utils
 import { formatHandling, getDistance } from "../../../utils";
+import {
+  SAVED_ROUTE_LIMIT,
+  hiddenSavedRouteCount,
+} from "./savedRouteCap";
 
 // Context
 import AppContext from "../../../context/AppContext";
@@ -55,6 +59,10 @@ const SavedRouteList = ({ isFocus }: SavedRouteListProps) => {
     () => savedRoutes.every((routeId) => !routeId),
     [savedRoutes]
   );
+  const hiddenCount = useMemo(
+    () => hiddenSavedRouteCount(savedEtas, routeList),
+    [savedEtas, routeList]
+  );
 
   if (!isFocus) {
     return <></>;
@@ -81,6 +89,11 @@ const SavedRouteList = ({ isFocus }: SavedRouteListProps) => {
               nearestFrom={savedEtas}
             />
           )
+      )}
+      {hiddenCount > 0 && (
+        <Typography sx={{ p: 2 }} color="text.secondary">
+          {t("另有 {{count}} 條收藏路線未顯示", { count: hiddenCount })}
+        </Typography>
       )}
     </List>
   );
@@ -146,7 +159,7 @@ const getRoutes = ({
       })
       .sort((a, b) => a[2] - b[2])
       .map((v) => v[0])
-      .slice(0, 40)
+      .slice(0, SAVED_ROUTE_LIMIT)
       .reverse(),
     isTodayHoliday,
     isRouteFilter,
