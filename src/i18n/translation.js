@@ -161,7 +161,8 @@ const resources = {
       對頭線: "REV",
       附近未有任何路線: "No available routes nearby",
       未有收藏路線: "No starred routes",
-      "另有 {{count}} 條收藏路線未顯示": "{{count}} more starred routes not shown",
+      "另有 {{count}} 條收藏路線未顯示":
+        "{{count}} more starred routes not shown",
       未有收藏車站: "No bookmarked stops",
       收藏中未有路線: "No routes in this collection",
       最近搜尋: "Recent",

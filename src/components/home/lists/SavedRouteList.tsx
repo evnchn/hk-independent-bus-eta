@@ -11,10 +11,7 @@ import {
 
 // Utils
 import { formatHandling, getDistance } from "../../../utils";
-import {
-  SAVED_ROUTE_LIMIT,
-  hiddenSavedRouteCount,
-} from "./savedRouteCap";
+import { SAVED_ROUTE_LIMIT, hiddenSavedRouteCount } from "./savedRouteCap";
 
 // Context
 import AppContext from "../../../context/AppContext";
