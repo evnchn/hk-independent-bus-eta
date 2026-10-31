@@ -71,6 +71,11 @@ const SavedRouteList = ({ isFocus }: SavedRouteListProps) => {
         <Typography sx={{ marginTop: 5 }} fontWeight="700">
           {t("未有收藏路線")}
         </Typography>
+        {hiddenCount > 0 && (
+          <Typography sx={{ p: 2 }} color="text.secondary">
+            {t("另有 {{count}} 條收藏路線未顯示", { count: hiddenCount })}
+          </Typography>
+        )}
       </Box>
     );
   }
