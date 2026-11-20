@@ -65,11 +65,14 @@ export const useStopEtas = ({
   const [stopEtas, setStopEtas] = useState<Array<[string, Eta[]]>>([]);
   const language = useLanguage();
   const isMounted = useRef<boolean>(false);
+  const fetchedAt = useRef<number>(0);
 
   const fetchData = useCallback(() => {
+    // hold the last-known ETAs over a brief hide or slow refresh, not for long
+    if (Date.now() - fetchedAt.current > MAX_ETA_AGE)
+      setStopEtas((prev) => (prev.length ? [] : prev));
     if (!isVisible || disabled || navigator.userAgent === "prerendering") {
       // skip if prerendering
-      setStopEtas([]);
       return new Promise((resolve) => resolve([]));
     }
     return Promise.all(
@@ -85,6 +88,7 @@ export const useStopEtas = ({
       )
     ).then((_etas) => {
       if (isMounted.current) {
+        fetchedAt.current = Date.now();
         const tempEtas: [string[], Eta[]][] = []; // [routeKey array, Etas array]
         setStopEtas(
           _etas
@@ -248,3 +252,5 @@ export const useStopEtas = ({
 
   return stopEtas;
 };
+
+const MAX_ETA_AGE = 2 * 60 * 1000;
