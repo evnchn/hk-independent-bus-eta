@@ -14,11 +14,13 @@ export const useEtas = (routeId: string, disable: boolean = false) => {
   const [etas, setEtas] = useState<Eta[] | null>(null);
   const language = useLanguage();
   const isMounted = useRef<boolean>(false);
+  const fetchedAt = useRef<number>(0);
 
   const fetchData = useCallback(() => {
+    // hold the last-known ETAs over a brief hide or slow refresh, not for long
+    if (Date.now() - fetchedAt.current > MAX_ETA_AGE) setEtas(null);
     if (!isVisible || navigator.userAgent === "prerendering") {
       // skip if prerendering
-      setEtas(null);
       return new Promise((resolve) => resolve([]));
     }
     return fetchEtas({
@@ -29,7 +31,10 @@ export const useEtas = (routeId: string, disable: boolean = false) => {
       holidays,
       serviceDayMap,
     }).then((_etas) => {
-      if (isMounted.current) setEtas(_etas);
+      if (isMounted.current) {
+        fetchedAt.current = Date.now();
+        setEtas(_etas);
+      }
     });
   }, [isVisible, language, routeObj, seq, stopList, holidays, serviceDayMap]);
 
@@ -50,6 +55,8 @@ export const useEtas = (routeId: string, disable: boolean = false) => {
 
   return etas;
 };
+
+const MAX_ETA_AGE = 2 * 60 * 1000;
 
 const DefaultRoute = {
   co: [""],
